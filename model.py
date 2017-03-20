@@ -4,6 +4,15 @@ import numpy as np
 
 print('reading data...')
 
+ADDFLIPPED=0.3
+ISSTRAIGHT=0.1
+KEEPSTRAIGHT=0.9
+OFFSETCAMS=0.2
+
+LEARNINGRATE=0.0001
+EPOCHS=5
+VALIDATIONSPLIT=0.2
+
 lines = []
 with open('data/driving_log.csv') as csvfile:
     reader = csv.reader(csvfile)
@@ -17,12 +26,25 @@ with open('data/driving_log.csv') as csvfile:
 images = []
 measurements = []
 for line in lines:
+    measurement = float(line[3])
+    if abs(measurement) < ISSTRAIGHT and np.random.rand() > KEEPSTRAIGHT:
+        continue
+    measurements.append(measurement)
     source_path = line[0]
     filename = 'data/' + source_path
     image = cv2.imread(filename)
     images.append(image)
-    measurement = float(line[3])
-    measurements.append(measurement)
+
+imagesFlipped=[]
+measurementsFlipped = []
+for i in range(len(images)):
+    if abs(measurements[i]) > ADDFLIPPED:
+        imageFlipped = cv2.flip(images[i], 1)
+        imagesFlipped.append(imageFlipped)
+        measurementsFlipped.append(-measurements[i])
+
+images.extend(imagesFlipped)
+measurements.extend(measurementsFlipped)
 
 X_train = np.array(images)
 y_train = np.array(measurements)
@@ -69,15 +91,15 @@ model.add(Dense(1))
 
 # model.summary()
 model.compile(loss='mse',
-            optimizer=Adam(lr=0.0001))
+            optimizer=Adam(lr=LEARNINGRATE))
 checkpoint_path="models/weights-{epoch:02d}.h5"
 checkpoint = ModelCheckpoint(checkpoint_path,
             verbose=1, save_best_only=False, save_weights_only=True, mode='auto')
 model.fit(X_train, y_train,
-            validation_split=0.2,
+            validation_split=VALIDATIONSPLIT,
             shuffle=True,
             callbacks=[checkpoint],
-            nb_epoch=5)
+            nb_epoch=EPOCHS)
 
 model.save('models/model.h5')
 
