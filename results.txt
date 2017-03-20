@@ -1,0 +1,321 @@
+LeNet - regularization - cropping
+
+- 22s - loss: 0.0932 - val_loss: 0.0157
+- 19s - loss: 0.0132 - val_loss: 0.0133
+- 19s - loss: 0.0102 - val_loss: 0.0120
+- 19s - loss: 0.0079 - val_loss: 0.0124
+- 19s - loss: 0.0063 - val_loss: 0.0137
+
+
+With reordering
+
+- 20s - loss: 1.1127 - val_loss: 0.0159
+- 19s - loss: 0.0129 - val_loss: 0.0133
+- 19s - loss: 0.0112 - val_loss: 0.0121
+- 19s - loss: 0.0102 - val_loss: 0.0118
+- 19s - loss: 0.0094 - val_loss: 0.0113
+
+
+NVIDIA without resizing
+
+- 26s - loss: 0.0122 - val_loss: 0.0105
+- 24s - loss: 0.0100 - val_loss: 0.0102
+- 24s - loss: 0.0090 - val_loss: 0.0103
+- 24s - loss: 0.0083 - val_loss: 0.0100
+- 24s - loss: 0.0073 - val_loss: 0.0104
+
+
+NVIDIA with resizing
+
+6428/6428 [==============================] - 16s - loss: 0.0137 - val_loss: 0.0119
+Epoch 2/5
+6428/6428 [==============================] - 11s - loss: 0.0110 - val_loss: 0.0107
+Epoch 3/5
+6428/6428 [==============================] - 11s - loss: 0.0101 - val_loss: 0.0105
+Epoch 4/5
+6428/6428 [==============================] - 11s - loss: 0.0094 - val_loss: 0.0100
+Epoch 5/5
+6428/6428 [==============================] - 11s - loss: 0.0089 - val_loss: 0.0106
+
+6400/6428 [============================>.] - ETA: 0s - loss: 0.0143Epoch 00000: saving model to models/model-00.h5
+6428/6428 [==============================] - 13s - loss: 0.0143 - val_loss: 0.0114
+Epoch 2/5
+6400/6428 [============================>.] - ETA: 0s - loss: 0.0112Epoch 00001: saving model to models/model-01.h5
+6428/6428 [==============================] - 12s - loss: 0.0112 - val_loss: 0.0109
+Epoch 3/5
+6400/6428 [============================>.] - ETA: 0s - loss: 0.0100Epoch 00002: saving model to models/model-02.h5
+6428/6428 [==============================] - 12s - loss: 0.0100 - val_loss: 0.0107
+Epoch 4/5
+6400/6428 [============================>.] - ETA: 0s - loss: 0.0091Epoch 00003: saving model to models/model-03.h5
+6428/6428 [==============================] - 12s - loss: 0.0092 - val_loss: 0.0096
+Epoch 5/5
+6400/6428 [============================>.] - ETA: 0s - loss: 0.0088Epoch 00004: saving model to models/model-04.h5
+6428/6428 [==============================] - 12s - loss: 0.0088 - val_loss: 0.0102
+
+
+6400/6428 [============================>.] - ETA: 0s - loss: 0.0137Epoch 00000: saving model to models/weights-00.h5
+6428/6428 [==============================] - 13s - loss: 0.0137 - val_loss: 0.0115
+Epoch 2/5
+6400/6428 [============================>.] - ETA: 0s - loss: 0.0110Epoch 00001: saving model to models/weights-01.h5
+6428/6428 [==============================] - 11s - loss: 0.0110 - val_loss: 0.0104
+Epoch 3/5
+6400/6428 [============================>.] - ETA: 0s - loss: 0.0100Epoch 00002: saving model to models/weights-02.h5
+6428/6428 [==============================] - 11s - loss: 0.0101 - val_loss: 0.0101
+Epoch 4/5
+6400/6428 [============================>.] - ETA: 0s - loss: 0.0096Epoch 00003: saving model to models/weights-03.h5
+6428/6428 [==============================] - 12s - loss: 0.0095 - val_loss: 0.0100
+Epoch 5/5
+6400/6428 [============================>.] - ETA: 0s - loss: 0.0090Epoch 00004: saving model to models/weights-04.h5
+6428/6428 [==============================] - 11s - loss: 0.0090 - val_loss: 0.0098
+
+
+
+Data Augmentation
+flipped, left and right cams.
+
+21184/21186 [============================>.] - ETA: 0s - loss: 0.0267Epoch 00000: saving model to models/weights-00.h5
+21186/21186 [==============================] - 43s - loss: 0.0267 - val_loss: 0.0517
+Epoch 2/5
+21184/21186 [============================>.] - ETA: 0s - loss: 0.0118Epoch 00001: saving model to models/weights-01.h5
+21186/21186 [==============================] - 42s - loss: 0.0118 - val_loss: 0.0435
+Epoch 3/5
+21184/21186 [============================>.] - ETA: 0s - loss: 0.0105Epoch 00002: saving model to models/weights-02.h5
+21186/21186 [==============================] - 42s - loss: 0.0105 - val_loss: 0.0471
+Epoch 4/5
+21184/21186 [============================>.] - ETA: 0s - loss: 0.0095Epoch 00003: saving model to models/weights-03.h5
+21186/21186 [==============================] - 42s - loss: 0.0095 - val_loss: 0.0448
+Epoch 5/5
+21184/21186 [============================>.] - ETA: 0s - loss: 0.0089Epoch 00004: saving model to models/weights-04.h5
+21186/21186 [==============================] - 42s - loss: 0.0089 - val_loss: 0.0429
+
+
+
+Rearranage preprocessing layers
+21248/21272 [============================>.] - ETA: 0s - loss: 0.0419Epoch 00000: saving model to models/weights-00.h5
+21272/21272 [==============================] - 43s - loss: 0.0419 - val_loss: 0.0175
+Epoch 2/5
+21248/21272 [============================>.] - ETA: 0s - loss: 0.0169Epoch 00001: saving model to models/weights-01.h5
+21272/21272 [==============================] - 41s - loss: 0.0169 - val_loss: 0.0138
+Epoch 3/5
+21248/21272 [============================>.] - ETA: 0s - loss: 0.0139Epoch 00002: saving model to models/weights-02.h5
+21272/21272 [==============================] - 41s - loss: 0.0139 - val_loss: 0.0128
+Epoch 4/5
+21248/21272 [============================>.] - ETA: 0s - loss: 0.0123Epoch 00003: saving model to models/weights-03.h5
+21272/21272 [==============================] - 41s - loss: 0.0123 - val_loss: 0.0127
+Epoch 5/5
+21248/21272 [============================>.] - ETA: 0s - loss: 0.0112Epoch 00004: saving model to models/weights-04.h5
+21272/21272 [==============================] - 41s - loss: 0.0112 - val_loss: 0.0127
+
+
+
+ISSTRAIGHT=0.1
+KEEPSTRAIGHT=0.8
+OFFSETCAMS=0.2
+LEARNINGRATE=0.001
+EPOCHS=5
+
+36160/36184 [============================>.] - ETA: 0s - loss: 0.0174Epoch 00000: saving model to models/weights-00.h5
+36184/36184 [==============================] - 64s - loss: 0.0173 - val_loss: 0.0106
+Epoch 2/5
+36160/36184 [============================>.] - ETA: 0s - loss: 0.0107Epoch 00001: saving model to models/weights-01.h5
+36184/36184 [==============================] - 64s - loss: 0.0107 - val_loss: 0.0103
+Epoch 3/5
+36160/36184 [============================>.] - ETA: 0s - loss: 0.0099Epoch 00002: saving model to models/weights-02.h5
+36184/36184 [==============================] - 69s - loss: 0.0099 - val_loss: 0.0106
+Epoch 4/5
+36160/36184 [============================>.] - ETA: 0s - loss: 0.0094Epoch 00003: saving model to models/weights-03.h5
+36184/36184 [==============================] - 81s - loss: 0.0094 - val_loss: 0.0110
+Epoch 5/5
+36160/36184 [============================>.] - ETA: 0s - loss: 0.0088Epoch 00004: saving model to models/weights-04.h5
+36184/36184 [==============================] - 92s - loss: 0.0088 - val_loss: 0.0109
+
+
+
+
+he_normal
+
+ISSTRAIGHT=0.1
+KEEPSTRAIGHT=0.8
+OFFSETCAMS=0.2
+
+LEARNINGRATE=0.0005
+EPOCHS=8
+
+36096/36115 [============================>.] - ETA: 0s - loss: 0.0290Epoch 00000: saving model to models/weights-00.h5
+36115/36115 [==============================] - 64s - loss: 0.0290 - val_loss: 0.0128
+Epoch 2/8
+36096/36115 [============================>.] - ETA: 0s - loss: 0.0124Epoch 00001: saving model to models/weights-01.h5
+36115/36115 [==============================] - 63s - loss: 0.0124 - val_loss: 0.0112
+Epoch 3/8
+36096/36115 [============================>.] - ETA: 0s - loss: 0.0109Epoch 00002: saving model to models/weights-02.h5
+36115/36115 [==============================] - 63s - loss: 0.0109 - val_loss: 0.0114
+Epoch 4/8
+36096/36115 [============================>.] - ETA: 0s - loss: 0.0101Epoch 00003: saving model to models/weights-03.h5
+36115/36115 [==============================] - 65s - loss: 0.0101 - val_loss: 0.0109
+Epoch 5/8
+36096/36115 [============================>.] - ETA: 0s - loss: 0.0094Epoch 00004: saving model to models/weights-04.h5
+36115/36115 [==============================] - 69s - loss: 0.0094 - val_loss: 0.0114
+Epoch 6/8
+36096/36115 [============================>.] - ETA: 0s - loss: 0.0089Epoch 00005: saving model to models/weights-05.h5
+36115/36115 [==============================] - 73s - loss: 0.0089 - val_loss: 0.0116
+Epoch 7/8
+36096/36115 [============================>.] - ETA: 0s - loss: 0.0083Epoch 00006: saving model to models/weights-06.h5
+36115/36115 [==============================] - 63s - loss: 0.0083 - val_loss: 0.0118
+Epoch 8/8
+36096/36115 [============================>.] - ETA: 0s - loss: 0.0078Epoch 00007: saving model to models/weights-07.h5
+36115/36115 [==============================] - 63s - loss: 0.0078 - val_loss: 0.0128
+
+
+
+
+FIX BUG in L/R Cams
+
+ISSTRAIGHT=0.1
+KEEPSTRAIGHT=0.8
+OFFSETCAMS=0.2
+
+LEARNINGRATE=0.001
+EPOCHS=5
+
+36096/36116 [============================>.] - ETA: 0s - loss: 0.0178Epoch 00000: saving model to models/weights-00.h5
+36116/36116 [==============================] - 65s - loss: 0.0178 - val_loss: 0.0116
+Epoch 2/5
+36096/36116 [============================>.] - ETA: 0s - loss: 0.0112Epoch 00001: saving model to models/weights-01.h5
+36116/36116 [==============================] - 62s - loss: 0.0112 - val_loss: 0.0108
+Epoch 3/5
+36096/36116 [============================>.] - ETA: 0s - loss: 0.0105Epoch 00002: saving model to models/weights-02.h5
+36116/36116 [==============================] - 81s - loss: 0.0105 - val_loss: 0.0115
+Epoch 4/5
+36096/36116 [============================>.] - ETA: 0s - loss: 0.0100Epoch 00003: saving model to models/weights-03.h5
+36116/36116 [==============================] - 107s - loss: 0.0100 - val_loss: 0.0111
+Epoch 5/5
+36096/36116 [============================>.] - ETA: 0s - loss: 0.0096Epoch 00004: saving model to models/weights-04.h5
+36116/36116 [==============================] - 63s - loss: 0.0096 - val_loss: 0.0120
+
+
+
+
+KEEPTRAIGHT=0.1
+OFFSETCAMS=0.2
+
+LEARNINGRATE=0.001
+EPOCHS=5
+
+19430/19430 [==============================] - 35s - loss: 0.0268 - val_loss: 0.0180
+Epoch 2/5
+19424/19430 [============================>.] - ETA: 0s - loss: 0.0157Epoch 00001: saving model to models/weights-01.h5
+19430/19430 [==============================] - 33s - loss: 0.0157 - val_loss: 0.0166
+Epoch 3/5
+19424/19430 [============================>.] - ETA: 0s - loss: 0.0142Epoch 00002: saving model to models/weights-02.h5
+19430/19430 [==============================] - 33s - loss: 0.0142 - val_loss: 0.0164
+Epoch 4/5
+19424/19430 [============================>.] - ETA: 0s - loss: 0.0136Epoch 00003: saving model to models/weights-03.h5
+19430/19430 [==============================] - 34s - loss: 0.0136 - val_loss: 0.0151
+Epoch 5/5
+19424/19430 [============================>.] - ETA: 0s - loss: 0.0126Epoch 00004: saving model to models/weights-04.h5
+19430/19430 [==============================] - 33s - loss: 0.0126 - val_loss: 0.0158
+
+
+
+
+KEEPSTRAIGHT=0.1
+OFFSETCAMS=0.2
+
+LEARNINGRATE=0.0005
+EPOCHS=7
+VALIDATIONSPLIT=0.1
+
+
+21568/21583 [============================>.] - ETA: 0s - loss: 0.0287Epoch 00000: saving model to models/weights-00.h5
+21583/21583 [==============================] - 36s - loss: 0.0287 - val_loss: 0.0246
+Epoch 2/7
+21568/21583 [============================>.] - ETA: 0s - loss: 0.0156Epoch 00001: saving model to models/weights-01.h5
+21583/21583 [==============================] - 34s - loss: 0.0156 - val_loss: 0.0239
+Epoch 3/7
+21568/21583 [============================>.] - ETA: 0s - loss: 0.0137Epoch 00002: saving model to models/weights-02.h5
+21583/21583 [==============================] - 35s - loss: 0.0137 - val_loss: 0.0220
+Epoch 4/7
+21568/21583 [============================>.] - ETA: 0s - loss: 0.0126Epoch 00003: saving model to models/weights-03.h5
+21583/21583 [==============================] - 34s - loss: 0.0126 - val_loss: 0.0216
+Epoch 5/7
+21568/21583 [============================>.] - ETA: 0s - loss: 0.0118Epoch 00004: saving model to models/weights-04.h5
+21583/21583 [==============================] - 35s - loss: 0.0118 - val_loss: 0.0213
+Epoch 6/7
+21568/21583 [============================>.] - ETA: 0s - loss: 0.0109Epoch 00005: saving model to models/weights-05.h5
+21583/21583 [==============================] - 35s - loss: 0.0109 - val_loss: 0.0233
+Epoch 7/7
+21568/21583 [============================>.] - ETA: 0s - loss: 0.0099Epoch 00006: saving model to models/weights-06.h5
+21583/21583 [==============================] - 35s - loss: 0.0099 - val_loss: 0.0213
+
+
+
+
+
+con el 5º epoch pasa la curva del puente.
+filtro solo los straight.
+
+ISSTRAIGHT=0.05
+KEEPSTRAIGHT=0.1
+OFFSETCAMS=0.2
+
+LEARNINGRATE=0.0005
+EPOCHS=7
+VALIDATIONSPLIT=0.1
+
+34016/34035 [============================>.] - ETA: 0s - loss: 0.0229Epoch 00000: saving model to models/weights-00.h5
+34035/34035 [==============================] - 56s - loss: 0.0229 - val_loss: 0.0143
+Epoch 2/7
+34016/34035 [============================>.] - ETA: 0s - loss: 0.0123Epoch 00001: saving model to models/weights-01.h5
+34035/34035 [==============================] - 54s - loss: 0.0123 - val_loss: 0.0146
+Epoch 3/7
+34016/34035 [============================>.] - ETA: 0s - loss: 0.0108Epoch 00002: saving model to models/weights-02.h5
+34035/34035 [==============================] - 54s - loss: 0.0108 - val_loss: 0.0156
+Epoch 4/7
+34016/34035 [============================>.] - ETA: 0s - loss: 0.0101Epoch 00003: saving model to models/weights-03.h5
+34035/34035 [==============================] - 54s - loss: 0.0101 - val_loss: 0.0145
+Epoch 5/7
+34016/34035 [============================>.] - ETA: 0s - loss: 0.0096Epoch 00004: saving model to models/weights-04.h5
+34035/34035 [==============================] - 54s - loss: 0.0096 - val_loss: 0.0154
+Epoch 6/7
+34016/34035 [============================>.] - ETA: 0s - loss: 0.0090Epoch 00005: saving model to models/weights-05.h5
+34035/34035 [==============================] - 53s - loss: 0.0090 - val_loss: 0.0152
+Epoch 7/7
+34016/34035 [============================>.] - ETA: 0s - loss: 0.0085Epoch 00006: saving model to models/weights-06.h5
+34035/34035 [==============================] - 54s - loss: 0.0085 - val_loss: 0.0156
+
+
+
+
+
+
+ISSTRAIGHT=0.05
+KEEPSTRAIGHT=0.1
+OFFSETCAMS=0.2
+
+LEARNINGRATE=0.0005
+EPOCHS=7
+VALIDATIONSPLIT=0.2
+
+crop 60:30
+
+30304/30320 [============================>.] - ETA: 0s - loss: 0.0226Epoch 00000: saving model to models/weights-00.h5
+30320/30320 [==============================] - 53s - loss: 0.0226 - val_loss: 0.0117
+Epoch 2/7
+30304/30320 [============================>.] - ETA: 0s - loss: 0.0125Epoch 00001: saving model to models/weights-01.h5
+30320/30320 [==============================] - 53s - loss: 0.0125 - val_loss: 0.0113
+Epoch 3/7
+30304/30320 [============================>.] - ETA: 0s - loss: 0.0112Epoch 00002: saving model to models/weights-02.h5
+30320/30320 [==============================] - 53s - loss: 0.0113 - val_loss: 0.0115
+Epoch 4/7
+30304/30320 [============================>.] - ETA: 0s - loss: 0.0108Epoch 00003: saving model to models/weights-03.h5
+30320/30320 [==============================] - 53s - loss: 0.0108 - val_loss: 0.0120
+Epoch 5/7
+30304/30320 [============================>.] - ETA: 0s - loss: 0.0101Epoch 00004: saving model to models/weights-04.h5
+30320/30320 [==============================] - 53s - loss: 0.0101 - val_loss: 0.0113
+Epoch 6/7
+30304/30320 [============================>.] - ETA: 0s - loss: 0.0096Epoch 00005: saving model to models/weights-05.h5
+30320/30320 [==============================] - 53s - loss: 0.0096 - val_loss: 0.0118
+Epoch 7/7
+30304/30320 [============================>.] - ETA: 0s - loss: 0.0089Epoch 00006: saving model to models/weights-06.h5
+30320/30320 [==============================] - 53s - loss: 0.0089 - val_loss: 0.0128
+
