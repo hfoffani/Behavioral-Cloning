@@ -23,39 +23,41 @@ with open('data/driving_log.csv') as csvfile:
             continue
         lines.append(line)
 
+def get_cams(lines):
+    for line in lines:
+        steer = float(line[3])
+        file_center_cam = 'data/' + line[0].strip()
+        file_left_cam  = 'data/' + line[1].strip()
+        file_right_cam = 'data/' + line[2].strip()
+        c_image = cv2.imread(file_center_cam)
+        yield c_image, steer 
+        l_image = cv2.imread(file_left_cam)
+        yield l_image, steer - OFFSETCAMS
+        r_image = cv2.imread(file_right_cam)
+        yield r_image, steer + OFFSETCAMS
+
+
+def add_flipped(obs):
+    for im, steer in obs:
+        yield im, steer
+        if abs(steer) > ADDFLIPPED:
+            imageFlipped = cv2.flip(im, 1)
+            yield imageFlipped, -steer
+        
+
+def filter_straight(obs):
+    for im, steer in obs:
+        if abs(steer) > ISSTRAIGHT or np.random.rand() < KEEPSTRAIGHT:
+            yield im, steer
+        
 images = []
-measurements = []
-for line in lines:
-    measurement = float(line[3])
-    if abs(measurement) < ISSTRAIGHT and np.random.rand() > KEEPSTRAIGHT:
-        continue
-    measurements.append(measurement)
-    file_center_cam = 'data/' + line[0].strip()
-    file_left_cam  = 'data/' + line[1].strip()
-    file_right_cam = 'data/' + line[2].strip()
-    c_image = cv2.imread(file_center_cam)
-    images.append(c_image)
-    measurements.append(measurement - OFFSETCAMS)
-    l_image = cv2.imread(file_left_cam)
-    images.append(l_image)
-    measurements.append(measurement + OFFSETCAMS)
-    r_image = cv2.imread(file_right_cam)
-    images.append(r_image)
-
-
-imagesFlipped=[]
-measurementsFlipped = []
-for i in range(len(images)):
-    if abs(measurements[i]) > ADDFLIPPED:
-        imageFlipped = cv2.flip(images[i], 1)
-        imagesFlipped.append(imageFlipped)
-        measurementsFlipped.append(-measurements[i])
-
-images.extend(imagesFlipped)
-measurements.extend(measurementsFlipped)
+angles = []
+for im, steer in filter_straight( add_flipped( get_cams( lines ))):
+    images.append(im)
+    angles.append(steer)
 
 X_train = np.array(images)
-y_train = np.array(measurements)
+y_train = np.array(angles)
 
 print('...all pre processed')
 
