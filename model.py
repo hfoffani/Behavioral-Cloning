@@ -35,16 +35,18 @@ from keras.layers import Flatten, Dense, Lambda
 from keras.layers import Convolution2D, MaxPooling2D
 from keras.layers import Dropout
 from keras.optimizers import Adam
+from keras.callbacks import ModelCheckpoint
 
 def resize4nvidia(img):
     import tensorflow as tf
     return tf.image.resize_images(img, [66, 200])
 
 model = Sequential()
+
 # model.add(Cropping2D . couldn't make it work
 model.add(Lambda(lambda x: x[:, :, 60:, :], input_shape=(160,320,3)))
-model.add(Lambda(lambda x: (x / 255.0) - 0.5))
 model.add(Lambda(resize4nvidia))
+model.add(Lambda(lambda x: (x / 255.0) - 0.5))
 
 model.add(Convolution2D(24, 5, 5, subsample=(2, 2), activation="relu")) 
 model.add(Convolution2D(36, 5, 5, subsample=(2, 2), activation="relu"))
@@ -65,14 +67,18 @@ model.add(Dense(10, activation="elu"))
 model.add(Dense(1))
 
 
-model.summary()
+# model.summary()
 model.compile(loss='mse',
             optimizer=Adam(lr=0.0001))
+checkpoint_path="models/weights-{epoch:02d}.h5"
+checkpoint = ModelCheckpoint(checkpoint_path,
+            verbose=1, save_best_only=False, save_weights_only=True, mode='auto')
 model.fit(X_train, y_train,
             validation_split=0.2,
             shuffle=True,
+            callbacks=[checkpoint],
             nb_epoch=5)
 
-model.save('model.h5')
+model.save('models/model.h5')
 
 exit()
