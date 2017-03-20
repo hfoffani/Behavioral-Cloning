@@ -108,6 +108,12 @@ if __name__ == '__main__':
         default='',
         help='Path to image folder. This is where the images from the run will be saved.'
     )
+    parser.add_argument(
+        'weights',
+        type=str,
+        default='',
+        help='Override weights'
+    )
     args = parser.parse_args()
 
     # check that model Keras version is same as local Keras version
@@ -120,6 +126,8 @@ if __name__ == '__main__':
               ', but the model was built using ', model_version)
 
     model = load_model(args.model)
+    if args.weights:
+        model.load_weights(args.weights)
 
     if args.image_folder != '':
         print("Creating image folder at {}".format(args.image_folder))
