@@ -6,7 +6,7 @@ print('reading data...')
 
 ADDFLIPPED=0.3
 ISSTRAIGHT=0.1
-KEEPSTRAIGHT=0.9
+KEEPSTRAIGHT=0.99
 OFFSETCAMS=0.2
 
 LEARNINGRATE=0.0001
@@ -30,10 +30,18 @@ for line in lines:
     if abs(measurement) < ISSTRAIGHT and np.random.rand() > KEEPSTRAIGHT:
         continue
     measurements.append(measurement)
-    source_path = line[0]
-    filename = 'data/' + source_path
-    image = cv2.imread(filename)
-    images.append(image)
+    file_center_cam = 'data/' + line[0].strip()
+    file_left_cam  = 'data/' + line[1].strip()
+    file_right_cam = 'data/' + line[2].strip()
+    c_image = cv2.imread(file_center_cam)
+    images.append(c_image)
+    measurements.append(measurement - OFFSETCAMS)
+    l_image = cv2.imread(file_left_cam)
+    images.append(l_image)
+    measurements.append(measurement + OFFSETCAMS)
+    r_image = cv2.imread(file_right_cam)
+    images.append(r_image)
+
 
 imagesFlipped=[]
 measurementsFlipped = []
