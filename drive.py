@@ -111,6 +111,7 @@ if __name__ == '__main__':
     parser.add_argument(
         'weights',
         type=str,
+        nargs='?',
         default='',
         help='Override weights'
     )
@@ -125,6 +126,7 @@ if __name__ == '__main__':
         print('You are using Keras version ', keras_version,
               ', but the model was built using ', model_version)
 
+    print(args)
     model = load_model(args.model)
     if args.weights:
         model.load_weights(args.weights)
