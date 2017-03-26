@@ -6,18 +6,20 @@ from keras.models import Sequential
 from keras.layers import Flatten, Dense, Lambda
 from keras.layers import Convolution2D, MaxPooling2D
 from keras.layers import Dropout
+from keras.layers import BatchNormalization
 from keras.optimizers import Adam
 from keras.callbacks import ModelCheckpoint
 
 
 print('reading data...')
 
-ISSTRAIGHT=0.01
-KEEPSTRAIGHT=0.2
-OFFSETCAMS=0.25
+ISSTRAIGHT=0.05
+KEEPSTRAIGHT=0.1
+KEEPLATERAL=0.2
+OFFSETCAMS=0.30
 
-LEARNINGRATE=0.0005
-EPOCHS=4
+LEARNINGRATE=0.001
+EPOCHS=7
 VALIDATIONSPLIT=0.2
 
 
@@ -88,9 +90,15 @@ def readimgs():
 def rem_straight():
     def func(inp):
         for im, steer in inp:
-            if (abs(steer) < ISSTRAIGHT or
-                abs((abs(steer) - OFFSETCAMS)) < ISSTRAIGHT
-                ) and np.random.rand() > KEEPSTRAIGHT:
+            if abs(steer) < ISSTRAIGHT and np.random.rand() > KEEPSTRAIGHT:
+                continue
+            yield im, steer
+    return monoid(tuple(), func)
+
+def rem_correction():
+    def func(inp):
+        for im, steer in inp:
+            if abs((abs(steer) - OFFSETCAMS)) < ISSTRAIGHT and np.random.rand() > KEEPLATERAL:
                 continue
             yield im, steer
     return monoid(tuple(), func)
@@ -116,8 +124,9 @@ def to_numpy(data):
 
 inputdata = readcsv('data/driving_log.csv') \
             | readimgs() \
-            | flip() \
             | rem_straight() \
+            | rem_correction() \
+            | flip() \
             | write_angles('models/angles.csv')
 
 
@@ -158,7 +167,8 @@ model.add(Dropout(0.5))
 model.add(Dense(50, activation="elu"))
 model.add(Dropout(0.5))
 
-model.add(Dense(10, activation="elu"))
+model.add(Dense(20, activation="elu"))
+model.add(Dropout(0.5))
 
 model.add(Dense(1))
 
