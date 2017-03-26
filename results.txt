@@ -319,3 +319,56 @@ Epoch 7/7
 30304/30320 [============================>.] - ETA: 0s - loss: 0.0089Epoch 00006: saving model to models/weights-06.h5
 30320/30320 [==============================] - 53s - loss: 0.0089 - val_loss: 0.0128
 
+
+
+
+ISSTRAIGHT=0.05
+KEEPSTRAIGHT=0.1
+KEEPLATERAL=0.2
+OFFSETCAMS=0.30
+
+LEARNINGRATE=0.0005
+EPOCHS=5
+VALIDATIONSPLIT=0.2
+
+NVIDIA with last of 20 nodes
+
+passes 1st curve to the right in 1st epoch
+
+
+
+
+
+-------------
+
+With BatchNormlization
+-0.21º continuously
+
+
+11584/11595 [============================>.] - ETA: 0s - loss: 0.1233Epoch 00000: saving model to models/weights-00.h5
+11595/11595 [==============================] - 152s - loss: 0.1232 - val_loss: 0.0599
+Epoch 2/7
+11584/11595 [============================>.] - ETA: 0s - loss: 0.0950Epoch 00001: saving model to models/weights-01.h5
+11595/11595 [==============================] - 151s - loss: 0.0949 - val_loss: 0.0599
+Epoch 3/7
+11584/11595 [============================>.] - ETA: 0s - loss: 0.0953Epoch 00002: saving model to models/weights-02.h5
+11595/11595 [==============================] - 152s - loss: 0.0953 - val_loss: 0.0601
+Epoch 4/7
+11584/11595 [============================>.] - ETA: 0s - loss: 0.0950Epoch 00003: saving model to models/weights-03.h5
+11595/11595 [==============================] - 154s - loss: 0.0949 - val_loss: 0.0599
+Epoch 5/7
+11584/11595 [============================>.] - ETA: 0s - loss: 0.0946Epoch 00004: saving model to models/weights-04.h5
+11595/11595 [==============================] - 152s - loss: 0.0947 - val_loss: 0.0601
+Epoch 6/7
+11584/11595 [============================>.] - ETA: 0s - loss: 0.0946Epoch 00005: saving model to models/weights-05.h5
+11595/11595 [==============================] - 151s - loss: 0.0946 - val_loss: 0.0599
+Epoch 7/7
+11584/11595 [============================>.] - ETA: 0s - loss: 0.0947Epoch 00006: saving model to models/weights-06.h5
+11595/11595 [==============================] - 151s - loss: 0.0947 - val_loss: 0.0599
+
+
+
+
+
+
+
