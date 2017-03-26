@@ -12,8 +12,8 @@ from keras.callbacks import ModelCheckpoint
 
 print('reading data...')
 
-ISSTRAIGHT=0.05
-KEEPSTRAIGHT=0.1
+ISSTRAIGHT=0.01
+KEEPSTRAIGHT=0.2
 OFFSETCAMS=0.25
 
 LEARNINGRATE=0.0005
@@ -88,7 +88,9 @@ def readimgs():
 def rem_straight():
     def func(inp):
         for im, steer in inp:
-            if abs(steer) < ISSTRAIGHT and np.random.rand() > KEEPSTRAIGHT:
+            if (abs(steer) < ISSTRAIGHT or
+                abs((abs(steer) - OFFSETCAMS)) < ISSTRAIGHT
+                ) and np.random.rand() > KEEPSTRAIGHT:
                 continue
             yield im, steer
     return monoid(tuple(), func)
@@ -161,7 +163,7 @@ model.add(Dense(10, activation="elu"))
 model.add(Dense(1))
 
 # model.summary()
-
+# exit()
 
 model.compile(loss='mse',
             optimizer=Adam(lr=LEARNINGRATE))
