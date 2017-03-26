@@ -36,7 +36,7 @@ class monoid:
     def __iter__(self):
         return self.func(iter(self.inp))
 
-def readfile(fname):
+def readcsv(fname):
     def func(inp):
         with open(fname) as csvfile:
             reader = csv.reader(csvfile)
@@ -63,7 +63,7 @@ def flip():
             yield imageFlipped, -steer
     return monoid(tuple(), func)
 
-def getimgs():
+def readimgs():
     def func(inp):
         for line in inp:
             steer = float(line[3])
@@ -105,16 +105,21 @@ def write_angles(fname):
 def to_numpy(data):
     images = []
     angles = []
-    for im, steer in alldata :
+    for im, steer in data :
         images.append(im)
         angles.append(steer)
     assert len(images) == len(angles)
     return np.array(images), np.array(angles)
 
 
-alldata = readfile('data/driving_log.csv') | getimgs() | flip() | rem_straight() | write_angles('models/angles.csv')
+inputdata = readcsv('data/driving_log.csv') \
+            | readimgs() \
+            | flip() \
+            | rem_straight() \
+            | write_angles('models/angles.csv')
 
-X_train, y_train = to_numpy(alldata)
+
+X_train, y_train = to_numpy(inputdata)
 print('...all pre processed. # observations:', len(y_train))
 print()
 # exit()
