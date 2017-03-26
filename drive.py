@@ -102,18 +102,18 @@ if __name__ == '__main__':
         help='Path to model h5 file. Model should be on the same path.'
     )
     parser.add_argument(
-        'image_folder',
-        type=str,
-        nargs='?',
-        default='',
-        help='Path to image folder. This is where the images from the run will be saved.'
-    )
-    parser.add_argument(
         'weights',
         type=str,
         nargs='?',
         default='',
         help='Override weights'
+    )
+    parser.add_argument(
+        'image_folder',
+        type=str,
+        nargs='?',
+        default='',
+        help='Path to image folder. This is where the images from the run will be saved.'
     )
     args = parser.parse_args()
 
@@ -128,7 +128,7 @@ if __name__ == '__main__':
 
     print(args)
     model = load_model(args.model)
-    if args.weights:
+    if args.weights and args.weights != '-':
         model.load_weights(args.weights)
 
     if args.image_folder != '':
