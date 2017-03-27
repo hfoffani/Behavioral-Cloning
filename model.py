@@ -139,52 +139,52 @@ def remove_left_right_from_straight(iterable, skip=False):
             continue
         yield im, steer
 
-@Pipe
 def write_angles_to_file(iterable, fname):
     with open(fname, 'w') as angfile:
         angfile.write("steer\n")
-        for im, steer in iterable:
+        for i, (_, steer) in enumerate(iterable):
             angfile.write("%f\n" % steer)
-            yield im, steer
+    print("number of angles for training:", i+1)
 
 
 #
 # INPUT DATA PIPELINE
 #
-train_data, valid_data = readcsv('data/driving_log.csv')
-validationset = valid_data \
-            | read_images_and_steer(only_center_cam=True)
-
-training = train_data \
+def pipeline(input_data):
+    return input_data \
             | read_images_and_steer() \
             | remove_straight(skip=True) \
             | remove_left_right_from_straight(skip=False) \
             | add_translated_images(100, skip=True) \
             | add_brightness_images(skip=True) \
             | flip_images_horizontally(skip=False) \
-            | remove_straight() \
-            | write_angles_to_file('models/angles.csv')
+            | remove_straight()
 
+train_data, valid_data = readcsv('data/driving_log.csv')
 
+validationset = valid_data \
+            | read_images_and_steer(only_center_cam=True)
 X_val, y_val = tuple( np.array(x) for x in zip(*validationset) )
-print(len(X_val), len(y_val))
-exit()
 
-def to_numpy(data):
-    images = []
-    angles = []
-    for im, steer in data :
-        images.append(im)
-        angles.append(steer)
-        pass
-    assert len(images) == len(angles)
-    xv, yv = zip(*validationset)
-    assert len(xv) == len(yv)
-    return np.array(images), np.array(angles), np.array(xv), np.array(yv)
+write_angles_to_file(pipeline(train_data), 'models/angles.csv')
 
 
-X_train, y_train, X_val, y_val = to_numpy(training)
-print('...all pre processed. # observations:', len(y_train), ' validate:', len(y_val))
+def keras_generator(input_data, batch_size):
+    X_batch = np.zeros((batch_size, 160, 320, 3))
+    y_batch = np.zeros(batch_size)
+    while True:
+        n = np.random.random_integers(0, len(input_data) - batch_size)
+        mini_batch = input_data[n: n+batch_size]
+        pipe = pipeline(mini_batch)
+        for i, (image,steer) in enumerate(pipe):
+            if i >= batch_size:
+                break
+            X_batch[i] = image
+            y_batch[i] = steer
+        yield X_batch, y_batch
+
+
+print('validatation set:', len(y_val))
 print()
 # exit()
 
@@ -233,10 +233,17 @@ model.compile(loss='mse',
 checkpoint_path="models/weights-{epoch:02d}.h5"
 checkpoint = ModelCheckpoint(checkpoint_path,
             verbose=1, save_best_only=False, save_weights_only=True, mode='auto')
-model.fit(X_train, y_train,
-            validation_split=VALIDATIONSPLIT,
+
+
+BATCH_SIZE=32
+epoch_generator = keras_generator(train_data, BATCH_SIZE)
+
+model.fit_generator(
+            epoch_generator,
+            samples_per_epoch=8000,
+            # validation_split=VALIDATIONSPLIT,
             validation_data=(X_val, y_val),
-            shuffle=True,
+            # shuffle=True,
             callbacks=[checkpoint],
             nb_epoch=EPOCHS)
 
