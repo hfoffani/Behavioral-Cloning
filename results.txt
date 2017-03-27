@@ -391,3 +391,143 @@ se sale de curva a la derecha.
 -------
 
 
+
+ISSTRAIGHT=0.1
+KEEPSTRAIGHT=0.1
+KEEPLATERAL=0.15
+OFFSETCAMS=0.20
+
+LEARNINGRATE=0.001
+EPOCHS=7
+VALIDATIONSPLIT=0.2
+
+
+
+...all pre processed. # observations: 8721  validate: 1557
+
+Train on 8721 samples, validate on 1557 samples
+Epoch 1/7
+modprobe: ERROR: could not insert 'nvidia_375_uvm': No such device
+E tensorflow/stream_executor/cuda/cuda_driver.cc:509] failed call to cuInit: CUDA_ERROR_UNKNOWN
+I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:145] kernel driver does not appear to be running on this host (ip-10-153-255-144): /proc/driver/nvidia/version does not exist
+8704/8721 [============================>.] - ETA: 0s - loss: 0.0634Epoch 00000: saving model to models/weights-00.h5
+8721/8721 [==============================] - 60s - loss: 0.0633 - val_loss: 0.0170
+Epoch 2/7
+8704/8721 [============================>.] - ETA: 0s - loss: 0.0350Epoch 00001: saving model to models/weights-01.h5
+8721/8721 [==============================] - 58s - loss: 0.0349 - val_loss: 0.0126
+Epoch 3/7
+8704/8721 [============================>.] - ETA: 0s - loss: 0.0305Epoch 00002: saving model to models/weights-02.h5
+8721/8721 [==============================] - 62s - loss: 0.0305 - val_loss: 0.0122
+Epoch 4/7
+8704/8721 [============================>.] - ETA: 0s - loss: 0.0286Epoch 00003: saving model to models/weights-03.h5
+8721/8721 [==============================] - 58s - loss: 0.0285 - val_loss: 0.0128
+Epoch 5/7
+8704/8721 [============================>.] - ETA: 0s - loss: 0.0262Epoch 00004: saving model to models/weights-04.h5
+8721/8721 [==============================] - 58s - loss: 0.0261 - val_loss: 0.0157
+Epoch 6/7
+8704/8721 [============================>.] - ETA: 0s - loss: 0.0258Epoch 00005: saving model to models/weights-05.h5
+8721/8721 [==============================] - 60s - loss: 0.0257 - val_loss: 0.0134
+Epoch 7/7
+8704/8721 [============================>.] - ETA: 0s - loss: 0.0237Epoch 00006: saving model to models/weights-06.h5
+8721/8721 [==============================] - 59s - loss: 0.0237 - val_loss: 0.0146
+
+---
+
+
+
+Using fit_generator
+
+7968/8000 [============================>.] - ETA: 0s - loss: 0.1020Epoch 00000: saving model to models/weights-00.h5
+8000/8000 [==============================] - 60s - loss: 0.1017 - val_loss: 0.0318
+Epoch 2/7
+7968/8000 [============================>.] - ETA: 0s - loss: 0.0493Epoch 00001: saving model to models/weights-01.h5
+8000/8000 [==============================] - 58s - loss: 0.0492 - val_loss: 0.0237
+Epoch 3/7
+7968/8000 [============================>.] - ETA: 0s - loss: 0.0326Epoch 00002: saving model to models/weights-02.h5
+8000/8000 [==============================] - 59s - loss: 0.0326 - val_loss: 0.0148
+Epoch 4/7
+7968/8000 [============================>.] - ETA: 0s - loss: 0.0289Epoch 00003: saving model to models/weights-03.h5
+8000/8000 [==============================] - 62s - loss: 0.0288 - val_loss: 0.0135
+Epoch 5/7
+7968/8000 [============================>.] - ETA: 0s - loss: 0.0292Epoch 00004: saving model to models/weights-04.h5
+8000/8000 [==============================] - 58s - loss: 0.0292 - val_loss: 0.0174
+Epoch 6/7
+7968/8000 [============================>.] - ETA: 0s - loss: 0.0299Epoch 00005: saving model to models/weights-05.h5
+8000/8000 [==============================] - 58s - loss: 0.0298 - val_loss: 0.0121
+Epoch 7/7
+7968/8000 [============================>.] - ETA: 0s - loss: 0.0290Epoch 00006: saving model to models/weights-06.h5
+8000/8000 [==============================] - 61s - loss: 0.0289 - val_loss: 0.0117
+
+
+
+
+----
+
+Adding brightness.
+
+number of angles for training: 17576
+validatation set: 1557
+
+Epoch 1/7
+modprobe: ERROR: could not insert 'nvidia_375_uvm': No such device
+E tensorflow/stream_executor/cuda/cuda_driver.cc:509] failed call to cuInit: CUDA_ERROR_UNKNOWN
+I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:145] kernel driver does not appear to be running on this host (ip-10-153-255-144): /proc/driver/nvidia/version does not exist
+19968/20000 [============================>.] - ETA: 0s - loss: 0.0505Epoch 00000: saving model to models/weights-00.h5
+20000/20000 [==============================] - 144s - loss: 0.0504 - val_loss: 0.0142
+Epoch 2/7
+19968/20000 [============================>.] - ETA: 0s - loss: 0.0323Epoch 00001: saving model to models/weights-01.h5
+20000/20000 [==============================] - 142s - loss: 0.0323 - val_loss: 0.0145
+Epoch 3/7
+19968/20000 [============================>.] - ETA: 0s - loss: 0.0258Epoch 00002: saving model to models/weights-02.h5
+20000/20000 [==============================] - 139s - loss: 0.0257 - val_loss: 0.0140
+Epoch 4/7
+19968/20000 [============================>.] - ETA: 0s - loss: 0.0264Epoch 00003: saving model to models/weights-03.h5
+20000/20000 [==============================] - 142s - loss: 0.0264 - val_loss: 0.0150
+Epoch 5/7
+19968/20000 [============================>.] - ETA: 0s - loss: 0.0259Epoch 00004: saving model to models/weights-04.h5
+20000/20000 [==============================] - 142s - loss: 0.0259 - val_loss: 0.0137
+Epoch 6/7
+19968/20000 [============================>.] - ETA: 0s - loss: 0.0246Epoch 00005: saving model to models/weights-05.h5
+20000/20000 [==============================] - 138s - loss: 0.0246 - val_loss: 0.0128
+Epoch 7/7
+19968/20000 [============================>.] - ETA: 0s - loss: 0.0254Epoch 00006: saving model to models/weights-06.h5
+20000/20000 [==============================] - 140s - loss: 0.0254 - val_loss: 0.0121
+
+
+
+----
+
+
+adding translations
+
+passes!!!!
+
+umber of angles for training: 26927
+validatation set: 1557
+
+Epoch 1/7
+modprobe: ERROR: could not insert 'nvidia_375_uvm': No such device
+E tensorflow/stream_executor/cuda/cuda_driver.cc:509] failed call to cuInit: CUDA_ERROR_UNKNOWN
+I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:145] kernel driver does not appear to be running on this host (ip-10-153-255-144): /proc/driver/nvidia/version does not exist
+26912/26944 [============================>.] - ETA: 0s - loss: 0.0514Epoch 00000: saving model to models/weights-00.h5
+26944/26944 [==============================] - 187s - loss: 0.0513 - val_loss: 0.0147
+Epoch 2/7
+26912/26944 [============================>.] - ETA: 0s - loss: 0.0307Epoch 00001: saving model to models/weights-01.h5
+26944/26944 [==============================] - 185s - loss: 0.0308 - val_loss: 0.0131
+Epoch 3/7
+26912/26944 [============================>.] - ETA: 0s - loss: 0.0266Epoch 00002: saving model to models/weights-02.h5
+26944/26944 [==============================] - 184s - loss: 0.0266 - val_loss: 0.0141
+Epoch 4/7
+26912/26944 [============================>.] - ETA: 0s - loss: 0.0267Epoch 00003: saving model to models/weights-03.h5
+26944/26944 [==============================] - 184s - loss: 0.0266 - val_loss: 0.0106
+Epoch 5/7
+26912/26944 [============================>.] - ETA: 0s - loss: 0.0219Epoch 00004: saving model to models/weights-04.h5
+26944/26944 [==============================] - 183s - loss: 0.0219 - val_loss: 0.0115
+Epoch 6/7
+26912/26944 [============================>.] - ETA: 0s - loss: 0.0221Epoch 00005: saving model to models/weights-05.h5
+26944/26944 [==============================] - 184s - loss: 0.0221 - val_loss: 0.0107
+Epoch 7/7
+26912/26944 [============================>.] - ETA: 0s - loss: 0.0204Epoch 00006: saving model to models/weights-06.h5
+26944/26944 [==============================] - 185s - loss: 0.0204 - val_loss: 0.0112
+
+
