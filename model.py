@@ -15,14 +15,14 @@ np.random.seed(5)
 
 print('reading data...')
 
-ISSTRAIGHT=0.05
+ISSTRAIGHT=0.1
 KEEPSTRAIGHT=0.1
-KEEPLATERAL=0.2
+KEEPLATERAL=0.15
 OFFSETCAMS=0.20
 
 LEARNINGRATE=0.001
 EPOCHS=7
-VALIDATIONSPLIT=0.08
+VALIDATIONSPLIT=0.2
 
 
 
@@ -41,6 +41,8 @@ class Pipe:
 
 
 def readcsv(fname):
+    train = []
+    valid = []
     with open(fname) as csvfile:
         reader = csv.reader(csvfile)
         header = True
@@ -48,31 +50,38 @@ def readcsv(fname):
             if header:
                 header = False
                 continue
-            yield line
+            steer = float(line[3])
+            c_cam = 'data/' + line[0].strip()
+            l_cam  = 'data/' + line[1].strip()
+            r_cam = 'data/' + line[2].strip()
+            observ = c_cam, l_cam, r_cam, steer
+            if np.random.uniform() < VALIDATIONSPLIT:
+                valid.append( observ )
+            else:
+                train.append( observ )
+    return train, valid
+
+
+def img_from_filename(fname):
+    img = cv2.imread(fname)
+    assert img is not None
+    return cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
 
 @Pipe
-def read_images_and_steer(iterable, validationset = None):
-    for line in iterable:
-        steer = float(line[3])
-        file_center_cam = 'data/' + line[0].strip()
-        file_left_cam  = 'data/' + line[1].strip()
-        file_right_cam = 'data/' + line[2].strip()
+def read_images_and_steer(iterable, only_center_cam=False):
+    for c_cam, l_cam, r_cam, steer in iterable:
         # center
-        img = cv2.imread(file_center_cam)
-        assert img is not None
-        c_image = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        if validationset is not None and np.random.uniform() < VALIDATIONSPLIT:
-            validationset.append( (c_image, steer) )
-        else:
-            yield c_image, steer
+        c_image = img_from_filename(c_cam)
+        yield c_image, steer
+        if only_center_cam:
+            continue
         # left
-        img = cv2.imread(file_left_cam)
-        assert img is not None
-        l_image = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        l_image = img_from_filename(l_cam)
         yield l_image, steer + OFFSETCAMS
         # right
-        img = cv2.imread(file_right_cam)
-        assert img is not None
+        r_image = img_from_filename(r_cam)
+        yield r_image, steer - OFFSETCAMS
 
 @Pipe
 def flip_images_horizontally(iterable, skip=False, include_original=True):
@@ -142,16 +151,24 @@ def write_angles_to_file(iterable, fname):
 #
 # INPUT DATA PIPELINE
 #
-validationset = []
-inputdata = readcsv('data/driving_log.csv') \
-            | read_images_and_steer(validationset) \
-            | remove_straight() \
-            | remove_left_right_from_straight() \
+train_data, valid_data = readcsv('data/driving_log.csv')
+validationset = valid_data \
+            | read_images_and_steer(only_center_cam=True)
+
+training = train_data \
+            | read_images_and_steer() \
+            | remove_straight(skip=True) \
+            | remove_left_right_from_straight(skip=False) \
             | add_translated_images(100, skip=True) \
             | add_brightness_images(skip=True) \
             | flip_images_horizontally(skip=False) \
+            | remove_straight() \
             | write_angles_to_file('models/angles.csv')
 
+
+X_val, y_val = tuple( np.array(x) for x in zip(*validationset) )
+print(len(X_val), len(y_val))
+exit()
 
 def to_numpy(data):
     images = []
@@ -159,13 +176,14 @@ def to_numpy(data):
     for im, steer in data :
         images.append(im)
         angles.append(steer)
+        pass
     assert len(images) == len(angles)
     xv, yv = zip(*validationset)
     assert len(xv) == len(yv)
     return np.array(images), np.array(angles), np.array(xv), np.array(yv)
 
 
-X_train, y_train, X_val, y_val = to_numpy(inputdata)
+X_train, y_train, X_val, y_val = to_numpy(training)
 print('...all pre processed. # observations:', len(y_train), ' validate:', len(y_val))
 print()
 # exit()
