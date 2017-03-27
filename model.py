@@ -11,6 +11,8 @@ from keras.optimizers import Adam
 from keras.callbacks import ModelCheckpoint
 
 
+np.random.seed(5)
+
 print('reading data...')
 
 ISSTRAIGHT=0.05
