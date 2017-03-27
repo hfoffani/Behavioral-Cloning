@@ -25,94 +25,82 @@ EPOCHS=7
 VALIDATIONSPLIT=0.2
 
 
-class monoid:
 
-    def __init__(self, inp, func=lambda x: x):
-        self.inp = inp
+class Pipe:
+    """ From https://github.com/JulienPalard/Pipe
+    """
+
+    def __init__(self, func=lambda x: x):
         self.func = func
 
-    def __or__(self, func):
-        return monoid(self, func)
+    def __ror__(self, other):
+        return self.func(other)
 
-    def __call__(self, inp):
-        return self.func(iter(inp))
+    def __call__(self, *args, **kwargs):
+        return Pipe(lambda x: self.func(x, *args, **kwargs))
 
-    def __iter__(self):
-        return self.func(iter(self.inp))
 
 def readcsv(fname):
-    def func(inp):
-        with open(fname) as csvfile:
-            reader = csv.reader(csvfile)
-            header = True
-            for line in reader:
-                if header:
-                    header = False
-                    continue
-                yield line
-    return monoid(tuple(), func)
-
-def ufilter(f):
-    def func(inp):
-        return filter(f, inp)
-    return monoid(tuple(), func)
-
-def flip():
-    def func(inp):
-        for l in inp:
-            img = l[0]
-            steer = l[1]
-            yield img, steer
-            imageFlipped = cv2.flip(img, 1)
-            yield imageFlipped, -steer
-    return monoid(tuple(), func)
-
-def readimgs():
-    def func(inp):
-        for line in inp:
-            steer = float(line[3])
-            file_center_cam = 'data/' + line[0].strip()
-            file_left_cam  = 'data/' + line[1].strip()
-            file_right_cam = 'data/' + line[2].strip()
-            # center
-            img = cv2.imread(file_center_cam)
-            assert img is not None
-            c_image = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-            yield c_image, steer
-            # left
-            img = cv2.imread(file_left_cam)
-            assert img is not None
-            l_image = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-            yield l_image, steer + OFFSETCAMS
-            # right
-            img = cv2.imread(file_right_cam)
-            assert img is not None
-    return monoid(tuple(), func)
-
-def rem_straight():
-    def func(inp):
-        for im, steer in inp:
-            if abs(steer) < ISSTRAIGHT and np.random.rand() > KEEPSTRAIGHT:
+    with open(fname) as csvfile:
+        reader = csv.reader(csvfile)
+        header = True
+        for line in reader:
+            if header:
+                header = False
                 continue
-            yield im, steer
-    return monoid(tuple(), func)
+            yield line
 
-def rem_correction():
-    def func(inp):
-        for im, steer in inp:
-            if abs((abs(steer) - OFFSETCAMS)) < ISSTRAIGHT and np.random.rand() > KEEPLATERAL:
-                continue
-            yield im, steer
-    return monoid(tuple(), func)
+@Pipe
+def flip(iterable):
+    for l in iterable:
+        img = l[0]
+        steer = l[1]
+        yield img, steer
+        imageFlipped = cv2.flip(img, 1)
+        yield imageFlipped, -steer
 
-def write_angles(fname):
-    def func(inp):
-        with open(fname, 'w') as angfile:
-            angfile.write("steer\n")
-            for im, steer in inp:
-                angfile.write("%f\n" % steer)
-                yield im, steer
-    return monoid(tuple(), func)
+@Pipe
+def readimgs(iterable):
+    for line in iterable:
+        steer = float(line[3])
+        file_center_cam = 'data/' + line[0].strip()
+        file_left_cam  = 'data/' + line[1].strip()
+        file_right_cam = 'data/' + line[2].strip()
+        # center
+        img = cv2.imread(file_center_cam)
+        assert img is not None
+        c_image = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        yield c_image, steer
+        # left
+        img = cv2.imread(file_left_cam)
+        assert img is not None
+        l_image = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        yield l_image, steer + OFFSETCAMS
+        # right
+        img = cv2.imread(file_right_cam)
+        assert img is not None
+
+@Pipe
+def rem_straight(iterable):
+    for im, steer in iterable:
+        if abs(steer) < ISSTRAIGHT and np.random.rand() > KEEPSTRAIGHT:
+            continue
+        yield im, steer
+
+@Pipe
+def rem_correction(iterable):
+    for im, steer in iterable:
+        if abs((abs(steer) - OFFSETCAMS)) < ISSTRAIGHT and np.random.rand() > KEEPLATERAL:
+            continue
+        yield im, steer
+
+@Pipe
+def write_angles(iterable, fname):
+    with open(fname, 'w') as angfile:
+        angfile.write("steer\n")
+        for im, steer in iterable:
+            angfile.write("%f\n" % steer)
+            yield im, steer
 
 
 inputdata = readcsv('data/driving_log.csv') \
@@ -131,6 +119,7 @@ def to_numpy(data):
         angles.append(steer)
     assert len(images) == len(angles)
     return np.array(images), np.array(angles)
+
 
 X_train, y_train = to_numpy(inputdata)
 print('...all pre processed. # observations:', len(y_train))
