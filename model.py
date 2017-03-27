@@ -127,7 +127,7 @@ def to_numpy(data):
 X_train, y_train = to_numpy(inputdata)
 print('...all pre processed. # observations:', len(y_train))
 print()
-exit()
+# exit()
 
 
 def resize4nvidia(img):
