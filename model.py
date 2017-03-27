@@ -84,9 +84,9 @@ def read_images_and_steer(iterable, only_center_cam=False):
         yield r_image, steer - OFFSETCAMS
 
 @Pipe
-def flip_images_horizontally(iterable, skip=False, include_original=True):
+def flip_images_horizontally(iterable, skip=False, replace=False):
     for im, steer in iterable:
-        if include_original:
+        if not replace:
             yield im, steer
         if skip:
             continue
@@ -94,34 +94,29 @@ def flip_images_horizontally(iterable, skip=False, include_original=True):
         yield imageFlipped, -steer
 
 @Pipe
-def add_translated_images(iterable,trans_range, skip=False, include_original=True):
+def add_translated_images(iterable, trans_range, skip=False, replace=False):
     for im, steer in iterable:
-        if include_original:
+        if not replace:
             yield im, steer
         if skip:
             continue
-        tr_x = trans_range*np.random.uniform()-trans_range/2
-        steer_tr = steer + tr_x/trans_range*2*.2
-        # tr_y = 40*np.random.uniform()-40/2
-        tr_y = 0
-        Trans_M = np.float32([[1,0,tr_x],[0,1,tr_y]])
-        image_tr = cv2.warpAffine(im,Trans_M,(320,160))
-        yield image_tr,steer_tr
+        tr = trans_range * np.random.uniform() - trans_range / 2
+        steer_tr = steer + tr / trans_range * 2 * .2
+        M = np.float32([[1, 0, tr], [0, 1, 0]])
+        image_tr = cv2.warpAffine(im, M, (320,160))
+        yield image_tr, steer_tr
 
 
 @Pipe
-def add_brightness_images(iterable, skip=False, include_original=True):
+def add_brightness_images(iterable, bright_range, skip=False, replace=False):
     for im, steer in iterable:
-        if include_original:
+        if not replace:
             yield im, steer
         if skip:
             continue
         image_br = cv2.cvtColor(im, cv2.COLOR_RGB2HSV)
-        # image_br = np.array(image_br, dtype = np.float64)
-        brightness = .5 + np.random.uniform()
-        image_br[:,:,2] = int(double(image_br[:,:,2]) * brightness)
-        image_br[:,:,2][image_br[:,:,2]>255] = 255
-        # image_br = np.array(image_br, dtype = np.uint8)
+        image_br[:, :, 2] = image_br[:, :, 2] * (bright_range + np.random.uniform())
+        image_br[:, :, 2][image_br[:, :, 2] > 255] = 255
         image_br = cv2.cvtColor(image_br, cv2.COLOR_HSV2RGB)
         yield image_br, steer
 
@@ -156,7 +151,7 @@ def pipeline(input_data):
             | remove_straight(skip=True) \
             | remove_left_right_from_straight(skip=False) \
             | add_translated_images(100, skip=True) \
-            | add_brightness_images(skip=True) \
+            | add_brightness_images(0.5, skip=False, replace=False) \
             | flip_images_horizontally(skip=False) \
             | remove_straight()
 
@@ -240,7 +235,7 @@ epoch_generator = keras_generator(train_data, BATCH_SIZE)
 
 model.fit_generator(
             epoch_generator,
-            samples_per_epoch=8000,
+            samples_per_epoch=20000,
             # validation_split=VALIDATIONSPLIT,
             validation_data=(X_val, y_val),
             # shuffle=True,
