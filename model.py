@@ -51,16 +51,7 @@ def readcsv(fname):
             yield line
 
 @Pipe
-def flip_images_horizontally(iterable):
-    for l in iterable:
-        img = l[0]
-        steer = l[1]
-        yield img, steer
-        imageFlipped = cv2.flip(img, 1)
-        yield imageFlipped, -steer
-
-@Pipe
-def read_images_and_steer(iterable):
+def read_images_and_steer(iterable, validationset = None):
     for line in iterable:
         steer = float(line[3])
         file_center_cam = 'data/' + line[0].strip()
@@ -70,7 +61,10 @@ def read_images_and_steer(iterable):
         img = cv2.imread(file_center_cam)
         assert img is not None
         c_image = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        yield c_image, steer
+        if validationset and np.random.uniform() < VALIDATIONSPLIT:
+            validationset.append( (c_image, steer) )
+        else:
+            yield c_image, steer
         # left
         img = cv2.imread(file_left_cam)
         assert img is not None
@@ -81,16 +75,58 @@ def read_images_and_steer(iterable):
         assert img is not None
 
 @Pipe
-def remove_straight(iterable):
+def flip_images_horizontally(iterable, skip=False, include_original=True):
     for im, steer in iterable:
-        if abs(steer) < ISSTRAIGHT and np.random.rand() > KEEPSTRAIGHT:
+        if include_original:
+            yield im, steer
+        if skip:
+            continue
+        imageFlipped = cv2.flip(im, 1)
+        yield imageFlipped, -steer
+
+@Pipe
+def add_translated_images(iterable,trans_range, skip=False, include_original=True):
+    for im, steer in iterable:
+        if include_original:
+            yield im, steer
+        if skip:
+            continue
+        tr_x = trans_range*np.random.uniform()-trans_range/2
+        steer_tr = steer + tr_x/trans_range*2*.2
+        # tr_y = 40*np.random.uniform()-40/2
+        tr_y = 0
+        Trans_M = np.float32([[1,0,tr_x],[0,1,tr_y]])
+        image_tr = cv2.warpAffine(im,Trans_M,(320,160))
+        yield image_tr,steer_tr
+
+
+@Pipe
+def add_brightness_images(iterable, skip=False, include_original=True):
+    for im, steer in iterable:
+        if include_original:
+            yield im, steer
+        if skip:
+            continue
+        image_br = cv2.cvtColor(im, cv2.COLOR_RGB2HSV)
+        # image_br = np.array(image_br, dtype = np.float64)
+        brightness = .5 + np.random.uniform()
+        image_br[:,:,2] = int(double(image_br[:,:,2]) * brightness)
+        image_br[:,:,2][image_br[:,:,2]>255] = 255
+        # image_br = np.array(image_br, dtype = np.uint8)
+        image_br = cv2.cvtColor(image_br, cv2.COLOR_HSV2RGB)
+        yield image_br, steer
+
+@Pipe
+def remove_straight(iterable, skip=False):
+    for im, steer in iterable:
+        if not skip and abs(steer) < ISSTRAIGHT and np.random.rand() > KEEPSTRAIGHT:
             continue
         yield im, steer
 
 @Pipe
-def remove_left_right_from_straight(iterable):
+def remove_left_right_from_straight(iterable, skip=False):
     for im, steer in iterable:
-        if abs((abs(steer) - OFFSETCAMS)) < ISSTRAIGHT and np.random.rand() > KEEPLATERAL:
+        if not skip and abs((abs(steer) - OFFSETCAMS)) < ISSTRAIGHT and np.random.rand() > KEEPLATERAL:
             continue
         yield im, steer
 
@@ -110,7 +146,9 @@ inputdata = readcsv('data/driving_log.csv') \
             | read_images_and_steer() \
             | remove_straight() \
             | remove_left_right_from_straight() \
-            | flip_images_horizontally() \
+            | add_translated_images(100, skip=True) \
+            | add_brightness_images(skip=True) \
+            | flip_images_horizontally(skip=True) \
             | write_angles_to_file('models/angles.csv')
 
 
