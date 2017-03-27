@@ -114,15 +114,6 @@ def write_angles(fname):
                 yield im, steer
     return monoid(tuple(), func)
 
-def to_numpy(data):
-    images = []
-    angles = []
-    for im, steer in data :
-        images.append(im)
-        angles.append(steer)
-    assert len(images) == len(angles)
-    return np.array(images), np.array(angles)
-
 
 inputdata = readcsv('data/driving_log.csv') \
             | readimgs() \
@@ -132,10 +123,19 @@ inputdata = readcsv('data/driving_log.csv') \
             | write_angles('models/angles.csv')
 
 
+def to_numpy(data):
+    images = []
+    angles = []
+    for im, steer in data :
+        images.append(im)
+        angles.append(steer)
+    assert len(images) == len(angles)
+    return np.array(images), np.array(angles)
+
 X_train, y_train = to_numpy(inputdata)
 print('...all pre processed. # observations:', len(y_train))
 print()
-# exit()
+exit()
 
 
 def resize4nvidia(img):
