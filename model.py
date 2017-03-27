@@ -22,7 +22,7 @@ OFFSETCAMS=0.20
 
 LEARNINGRATE=0.001
 EPOCHS=7
-VALIDATIONSPLIT=0.2
+VALIDATIONSPLIT=0.08
 
 
 
@@ -61,7 +61,7 @@ def read_images_and_steer(iterable, validationset = None):
         img = cv2.imread(file_center_cam)
         assert img is not None
         c_image = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        if validationset and np.random.uniform() < VALIDATIONSPLIT:
+        if validationset is not None and np.random.uniform() < VALIDATIONSPLIT:
             validationset.append( (c_image, steer) )
         else:
             yield c_image, steer
@@ -142,13 +142,14 @@ def write_angles_to_file(iterable, fname):
 #
 # INPUT DATA PIPELINE
 #
+validationset = []
 inputdata = readcsv('data/driving_log.csv') \
-            | read_images_and_steer() \
+            | read_images_and_steer(validationset) \
             | remove_straight() \
             | remove_left_right_from_straight() \
             | add_translated_images(100, skip=True) \
             | add_brightness_images(skip=True) \
-            | flip_images_horizontally(skip=True) \
+            | flip_images_horizontally(skip=False) \
             | write_angles_to_file('models/angles.csv')
 
 
@@ -159,11 +160,13 @@ def to_numpy(data):
         images.append(im)
         angles.append(steer)
     assert len(images) == len(angles)
-    return np.array(images), np.array(angles)
+    xv, yv = zip(*validationset)
+    assert len(xv) == len(yv)
+    return np.array(images), np.array(angles), np.array(xv), np.array(yv)
 
 
-X_train, y_train = to_numpy(inputdata)
-print('...all pre processed. # observations:', len(y_train))
+X_train, y_train, X_val, y_val = to_numpy(inputdata)
+print('...all pre processed. # observations:', len(y_train), ' validate:', len(y_val))
 print()
 # exit()
 
@@ -214,6 +217,7 @@ checkpoint = ModelCheckpoint(checkpoint_path,
             verbose=1, save_best_only=False, save_weights_only=True, mode='auto')
 model.fit(X_train, y_train,
             validation_split=VALIDATIONSPLIT,
+            validation_data=(X_val, y_val),
             shuffle=True,
             callbacks=[checkpoint],
             nb_epoch=EPOCHS)
