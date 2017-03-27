@@ -139,7 +139,7 @@ def write_angles_to_file(iterable, fname):
         angfile.write("steer\n")
         for i, (_, steer) in enumerate(iterable):
             angfile.write("%f\n" % steer)
-    print("number of angles for training:", i+1)
+        return i+1
 
 
 #
@@ -150,7 +150,7 @@ def pipeline(input_data):
             | read_images_and_steer() \
             | remove_straight(skip=True) \
             | remove_left_right_from_straight(skip=False) \
-            | add_translated_images(100, skip=True) \
+            | add_translated_images(100, skip=False, replace=True) \
             | add_brightness_images(0.5, skip=False, replace=False) \
             | flip_images_horizontally(skip=False) \
             | remove_straight()
@@ -161,7 +161,8 @@ validationset = valid_data \
             | read_images_and_steer(only_center_cam=True)
 X_val, y_val = tuple( np.array(x) for x in zip(*validationset) )
 
-write_angles_to_file(pipeline(train_data), 'models/angles.csv')
+samples = write_angles_to_file(pipeline(train_data), 'models/angles.csv')
+print("number of angles for training:", samples)
 
 
 def keras_generator(input_data, batch_size):
@@ -233,9 +234,12 @@ checkpoint = ModelCheckpoint(checkpoint_path,
 BATCH_SIZE=32
 epoch_generator = keras_generator(train_data, BATCH_SIZE)
 
+# samples_per_epoch should be divisible by batch size
+s_p_e = ((samples // BATCH_SIZE) + 1) * BATCH_SIZE
+
 model.fit_generator(
             epoch_generator,
-            samples_per_epoch=20000,
+            samples_per_epoch=s_p_e,
             # validation_split=VALIDATIONSPLIT,
             validation_data=(X_val, y_val),
             # shuffle=True,
