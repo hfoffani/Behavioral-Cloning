@@ -372,3 +372,22 @@ Epoch 7/7
 
 
 
+--------------
+
+no BatchNormalization
+
+ISSTRAIGHT=0.05
+KEEPSTRAIGHT=0.1
+KEEPLATERAL=0.2
+OFFSETCAMS=0.20
+
+LEARNINGRATE=0.001
+EPOCHS=7
+VALIDATIONSPLIT=0.2
+
+
+se sale de curva a la derecha.
+
+-------
+
+
