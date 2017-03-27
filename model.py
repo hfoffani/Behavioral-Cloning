@@ -51,7 +51,7 @@ def readcsv(fname):
             yield line
 
 @Pipe
-def flip(iterable):
+def flip_images_horizontally(iterable):
     for l in iterable:
         img = l[0]
         steer = l[1]
@@ -60,7 +60,7 @@ def flip(iterable):
         yield imageFlipped, -steer
 
 @Pipe
-def readimgs(iterable):
+def read_images_and_steer(iterable):
     for line in iterable:
         steer = float(line[3])
         file_center_cam = 'data/' + line[0].strip()
@@ -81,21 +81,21 @@ def readimgs(iterable):
         assert img is not None
 
 @Pipe
-def rem_straight(iterable):
+def remove_straight(iterable):
     for im, steer in iterable:
         if abs(steer) < ISSTRAIGHT and np.random.rand() > KEEPSTRAIGHT:
             continue
         yield im, steer
 
 @Pipe
-def rem_correction(iterable):
+def remove_left_right_from_straight(iterable):
     for im, steer in iterable:
         if abs((abs(steer) - OFFSETCAMS)) < ISSTRAIGHT and np.random.rand() > KEEPLATERAL:
             continue
         yield im, steer
 
 @Pipe
-def write_angles(iterable, fname):
+def write_angles_to_file(iterable, fname):
     with open(fname, 'w') as angfile:
         angfile.write("steer\n")
         for im, steer in iterable:
@@ -103,12 +103,15 @@ def write_angles(iterable, fname):
             yield im, steer
 
 
+#
+# INPUT DATA PIPELINE
+#
 inputdata = readcsv('data/driving_log.csv') \
-            | readimgs() \
-            | rem_straight() \
-            | rem_correction() \
-            | flip() \
-            | write_angles('models/angles.csv')
+            | read_images_and_steer() \
+            | remove_straight() \
+            | remove_left_right_from_straight() \
+            | flip_images_horizontally() \
+            | write_angles_to_file('models/angles.csv')
 
 
 def to_numpy(data):
