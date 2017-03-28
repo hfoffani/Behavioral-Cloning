@@ -2,6 +2,9 @@ import csv
 import cv2
 import numpy as np
 from scipy.stats import norm
+from collections import defaultdict
+
+np.random.seed(5)
 
 from keras.models import Sequential
 from keras.layers import Flatten, Dense, Lambda
@@ -11,8 +14,6 @@ from keras.layers import BatchNormalization
 from keras.optimizers import Adam
 from keras.callbacks import ModelCheckpoint
 
-
-np.random.seed(5)
 
 print('reading data...')
 
@@ -89,6 +90,17 @@ def read_images_and_steer(iterable, only_center_cam=False):
         # right
         r_image = img_from_filename(r_cam)
         yield r_image, steer - OFFSETCAMS
+
+@Pipe
+def write_images(iterable, name, skip=False):
+    d = defaultdict(int)
+    for im, steer in iterable:
+        if d[name] <= 50 and abs(steer) > .15 and np.random.uniform() < .005:
+            d[name] += 1
+            fname = 'models/images/%s-%04d.jpg' % (name, d[name])
+            cv2.imwrite(fname, im)
+        yield im, steer
+
 
 @Pipe
 def flip_images_horizontally(iterable, skip=False, replace=False):
