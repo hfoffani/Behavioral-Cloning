@@ -27,7 +27,7 @@ MAXTRANSLATE=50
 MAXBRIGHT=.5
 SIGMADELZEROS=.2
 
-LEARNINGRATE=0.001
+LEARNINGRATE=0.0001
 EPOCHS=7
 VALIDATIONSPLIT=0.2
 BATCH_SIZE=32
@@ -177,8 +177,10 @@ validationset = valid_data \
             | read_images_and_steer(only_center_cam=True)
 X_val, y_val = tuple( np.array(x) for x in zip(*validationset) )
 
-samples = write_angles_to_file(pipeline(train_data), 'models/angles.csv')
-print("number of angles for training:", samples)
+# for exact numbers but slower processing enable the commented line.
+samples = 26400
+# samples = write_angles_to_file(pipeline(train_data), 'models/angles.csv')
+print("aprox. number of angles for training:", samples)
 
 
 def keras_generator(input_data, batch_size):
