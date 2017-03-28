@@ -531,3 +531,55 @@ Epoch 7/7
 26944/26944 [==============================] - 185s - loss: 0.0204 - val_loss: 0.0112
 
 
+
+
+---------
+
+
+
+This commit passes: c13cce8 (use weights-02.h5, with 3 epochs).
+
+WIDTH=320
+HEIGHT=160
+CHANNELS=3
+
+OFFSETCAMS=0.20
+ANGLEPERPIXEL=0.004
+MAXTRANSLATE=50
+MAXBRIGHT=.5
+SIGMADELZEROS=.2
+
+LEARNINGRATE=0.001
+EPOCHS=7
+VALIDATIONSPLIT=0.2
+BATCH_SIZE=32
+
+
+number of angles for training: 26399
+validatation set: 1557
+
+Epoch 1/7
+modprobe: ERROR: could not insert 'nvidia_375_uvm': Unknown symbol in module, or unknown parameter (see dmesg)
+E tensorflow/stream_executor/cuda/cuda_driver.cc:509] failed call to cuInit: CUDA_ERROR_UNKNOWN
+I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:145] kernel driver does not appear to be running on this host (ip-10-153-255-144): /proc/driver/nvidia/version does not exist
+26368/26400 [============================>.] - ETA: 0s - loss: 0.0510Epoch 00000: saving model to models/weights-00.h5
+26400/26400 [==============================] - 186s - loss: 0.0510 - val_loss: 0.0174
+Epoch 2/7
+26368/26400 [============================>.] - ETA: 0s - loss: 0.0298Epoch 00001: saving model to models/weights-01.h5
+26400/26400 [==============================] - 185s - loss: 0.0298 - val_loss: 0.0159
+Epoch 3/7
+26368/26400 [============================>.] - ETA: 0s - loss: 0.0276Epoch 00002: saving model to models/weights-02.h5
+26400/26400 [==============================] - 185s - loss: 0.0276 - val_loss: 0.0136
+Epoch 4/7
+26368/26400 [============================>.] - ETA: 0s - loss: 0.0244Epoch 00003: saving model to models/weights-03.h5
+26400/26400 [==============================] - 186s - loss: 0.0244 - val_loss: 0.0187
+Epoch 5/7
+26368/26400 [============================>.] - ETA: 0s - loss: 0.0227Epoch 00004: saving model to models/weights-04.h5
+26400/26400 [==============================] - 186s - loss: 0.0227 - val_loss: 0.0140
+Epoch 6/7
+26368/26400 [============================>.] - ETA: 0s - loss: 0.0234Epoch 00005: saving model to models/weights-05.h5
+26400/26400 [==============================] - 186s - loss: 0.0233 - val_loss: 0.0134
+Epoch 7/7
+26368/26400 [============================>.] - ETA: 0s - loss: 0.0227Epoch 00006: saving model to models/weights-06.h5
+26400/26400 [==============================] - 186s - loss: 0.0227 - val_loss: 0.0172
+
