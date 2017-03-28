@@ -22,7 +22,6 @@ HEIGHT=160
 CHANNELS=3
 
 OFFSETCAMS=0.20
-ANGLEPERPIXEL=0.004
 MAXTRANSLATE=50
 MAXBRIGHT=.5
 SIGMADELZEROS=.2
@@ -111,6 +110,9 @@ def add_translated_images(iterable, trans_pixels, skip=False, replace=False):
         trx = np.random.uniform(-trans_pixels, trans_pixels)
         M = np.float32([[1, 0, trx], [0, 1, 0]])
         image_trx = cv2.warpAffine(im, M, (WIDTH, HEIGHT))
+        # Factor proposed by Vivek Yadav
+        # https://carnd-forums.udacity.com/display/~vivek1108
+        ANGLEPERPIXEL=0.004
         steer_trx = steer + trx * ANGLEPERPIXEL
         yield image_trx, steer_trx
 
@@ -152,10 +154,10 @@ def write_angles_to_file(iterable, fname):
 def pipeline(input_data):
     return input_data \
             | read_images_and_steer() \
-            | add_translated_images(MAXTRANSLATE, skip=False, replace=False) \
-            | add_brightness_images(MAXBRIGHT, skip=False, replace=True) \
-            | flip_images_horizontally(skip=False) \
-            | remove_with_normal(SIGMADELZEROS, skip=False)
+            | add_translated_images(MAXTRANSLATE) \
+            | add_brightness_images(MAXBRIGHT, replace=True) \
+            | flip_images_horizontally() \
+            | remove_with_normal(SIGMADELZEROS)
 
 train_data, valid_data = readcsv('data/driving_log.csv')
 
@@ -173,8 +175,8 @@ def keras_generator(input_data, batch_size):
     while True:
         # batch_size * 10 to prevent pipeline exhaust
         n = np.random.random_integers(0, len(input_data) - batch_size * 10)
-        mini_batch = input_data[n: n+batch_size*10]
-        pipe = pipeline(mini_batch)
+        data_slice = input_data[n: n + batch_size * 10]
+        pipe = pipeline(data_slice)
         for i, (image,steer) in enumerate(pipe):
             if i >= batch_size:
                 break
