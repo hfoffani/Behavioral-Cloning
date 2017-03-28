@@ -1,6 +1,7 @@
 import csv
 import cv2
 import numpy as np
+from scipy.stats import norm
 
 from keras.models import Sequential
 from keras.layers import Flatten, Dense, Lambda
@@ -15,14 +16,21 @@ np.random.seed(5)
 
 print('reading data...')
 
-ISSTRAIGHT=0.1
-KEEPSTRAIGHT=0.1
-KEEPLATERAL=0.15
+
+WIDTH=320
+HEIGHT=160
+CHANNELS=3
+
 OFFSETCAMS=0.20
+ANGLEPERPIXEL=0.004
+MAXTRANSLATE=50
+MAXBRIGHT=.5
+SIGMADELZEROS=.2
 
 LEARNINGRATE=0.001
 EPOCHS=7
 VALIDATIONSPLIT=0.2
+BATCH_SIZE=32
 
 
 
@@ -52,7 +60,7 @@ def readcsv(fname):
                 continue
             steer = float(line[3])
             c_cam = 'data/' + line[0].strip()
-            l_cam  = 'data/' + line[1].strip()
+            l_cam = 'data/' + line[1].strip()
             r_cam = 'data/' + line[2].strip()
             observ = c_cam, l_cam, r_cam, steer
             if np.random.uniform() < VALIDATIONSPLIT:
@@ -90,47 +98,43 @@ def flip_images_horizontally(iterable, skip=False, replace=False):
             yield im, steer
         if skip:
             continue
-        imageFlipped = cv2.flip(im, 1)
-        yield imageFlipped, -steer
+        image_flip = cv2.flip(im, 1)
+        yield image_flip, -steer
 
 @Pipe
-def add_translated_images(iterable, trans_range, skip=False, replace=False):
+def add_translated_images(iterable, trans_pixels, skip=False, replace=False):
     for im, steer in iterable:
         if not replace:
             yield im, steer
         if skip:
             continue
-        tr = trans_range * np.random.uniform() - trans_range / 2
-        steer_tr = steer + tr / trans_range * 2 * .2
-        M = np.float32([[1, 0, tr], [0, 1, 0]])
-        image_tr = cv2.warpAffine(im, M, (320,160))
-        yield image_tr, steer_tr
+        trx = np.random.uniform(-trans_pixels, trans_pixels)
+        M = np.float32([[1, 0, trx], [0, 1, 0]])
+        image_trx = cv2.warpAffine(im, M, (WIDTH, HEIGHT))
+        steer_trx = steer + trx * ANGLEPERPIXEL
+        yield image_trx, steer_trx
 
 
 @Pipe
-def add_brightness_images(iterable, bright_range, skip=False, replace=False):
+def add_brightness_images(iterable, bright_percent, skip=False, replace=False):
     for im, steer in iterable:
         if not replace:
             yield im, steer
         if skip:
             continue
         image_br = cv2.cvtColor(im, cv2.COLOR_RGB2HSV)
-        image_br[:, :, 2] = image_br[:, :, 2] * (bright_range + np.random.uniform())
+        alter = np.random.uniform(1 - bright_percent, 1 + bright_percent)
+        image_br[:, :, 2] = image_br[:, :, 2] * alter
         image_br[:, :, 2][image_br[:, :, 2] > 255] = 255
         image_br = cv2.cvtColor(image_br, cv2.COLOR_HSV2RGB)
         yield image_br, steer
 
 @Pipe
-def remove_straight(iterable, skip=False):
+def remove_with_normal(iterable, sigma, skip=False):
+    mx = norm.pdf(0.0, 0.0, sigma)
     for im, steer in iterable:
-        if not skip and abs(steer) < ISSTRAIGHT and np.random.rand() > KEEPSTRAIGHT:
-            continue
-        yield im, steer
-
-@Pipe
-def remove_left_right_from_straight(iterable, skip=False):
-    for im, steer in iterable:
-        if not skip and abs((abs(steer) - OFFSETCAMS)) < ISSTRAIGHT and np.random.rand() > KEEPLATERAL:
+        threshold = norm.pdf(steer, 0.0, sigma) / mx
+        if not skip and np.random.uniform() < threshold:
             continue
         yield im, steer
 
@@ -148,12 +152,10 @@ def write_angles_to_file(iterable, fname):
 def pipeline(input_data):
     return input_data \
             | read_images_and_steer() \
-            | remove_straight(skip=True) \
-            | remove_left_right_from_straight(skip=False) \
-            | add_translated_images(100, skip=False, replace=True) \
-            | add_brightness_images(0.5, skip=False, replace=False) \
+            | add_translated_images(MAXTRANSLATE, skip=False, replace=False) \
+            | add_brightness_images(MAXBRIGHT, skip=False, replace=True) \
             | flip_images_horizontally(skip=False) \
-            | remove_straight()
+            | remove_with_normal(SIGMADELZEROS, skip=False)
 
 train_data, valid_data = readcsv('data/driving_log.csv')
 
@@ -166,17 +168,20 @@ print("number of angles for training:", samples)
 
 
 def keras_generator(input_data, batch_size):
-    X_batch = np.zeros((batch_size, 160, 320, 3))
+    X_batch = np.zeros((batch_size, HEIGHT, WIDTH, CHANNELS))
     y_batch = np.zeros(batch_size)
     while True:
-        n = np.random.random_integers(0, len(input_data) - batch_size)
-        mini_batch = input_data[n: n+batch_size]
+        # batch_size * 10 to prevent pipeline exhaust
+        n = np.random.random_integers(0, len(input_data) - batch_size * 10)
+        mini_batch = input_data[n: n+batch_size*10]
         pipe = pipeline(mini_batch)
         for i, (image,steer) in enumerate(pipe):
             if i >= batch_size:
                 break
             X_batch[i] = image
             y_batch[i] = steer
+        else:
+            print("THIS BATCH HAS ZEROES!!!")
         yield X_batch, y_batch
 
 
@@ -193,7 +198,7 @@ def resize4nvidia(img):
 model = Sequential()
 
 # model.add(Cropping2D . couldn't make it work
-model.add(Lambda(lambda x: x[:, :, 60:-30, 0:], input_shape=(160,320,3)))
+model.add(Lambda(lambda x: x[:, :, 60:-30, 0:], input_shape=(HEIGHT, WIDTH, CHANNELS)))
 model.add(Lambda(resize4nvidia))
 model.add(Lambda(lambda x: (x / 255.0) - 0.5))
 
@@ -231,7 +236,6 @@ checkpoint = ModelCheckpoint(checkpoint_path,
             verbose=1, save_best_only=False, save_weights_only=True, mode='auto')
 
 
-BATCH_SIZE=32
 epoch_generator = keras_generator(train_data, BATCH_SIZE)
 
 # samples_per_epoch should be divisible by batch size
