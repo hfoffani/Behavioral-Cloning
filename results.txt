@@ -629,3 +629,50 @@ Non-trainable params: 0
 
 --
 
+
+commit: 8766902
+
+in 7 epochs passes. go very sharp to the left on the right curve.
+
+
+OFFSETCAMS=0.25
+MAXTRANSLATE=50
+MAXBRIGHT=.5
+SIGMADELZEROS=0.25
+
+LEARNINGRATE=0.0001
+EPOCHS=7
+VALIDATIONSPLIT=0.2
+BATCH_SIZE=64
+
+
+aprox. number of angles per epoch for training: 50000
+validatation set: 1557
+
+Epoch 1/7
+modprobe: ERROR: could not insert 'nvidia_375_uvm': No such device
+E tensorflow/stream_executor/cuda/cuda_driver.cc:491] failed call to cuInit: CUDA_ERROR_UNKNOWN
+I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:140] kernel driver does not appear to be running on this host (ip-10-166-171-22): /proc/driver/nvidia/version does not exist
+49984/50048 [============================>.] - ETA: 0s - loss: 0.0562Epoch 00000: saving model to weights-00.h5
+50048/50048 [==============================] - 360s - loss: 0.0561 - val_loss: 0.0212
+Epoch 2/7
+49984/50048 [============================>.] - ETA: 0s - loss: 0.0423Epoch 00001: saving model to weights-01.h5
+50048/50048 [==============================] - 353s - loss: 0.0423 - val_loss: 0.0120
+Epoch 3/7
+49984/50048 [============================>.] - ETA: 0s - loss: 0.0328Epoch 00002: saving model to weights-02.h5
+50048/50048 [==============================] - 351s - loss: 0.0327 - val_loss: 0.0128
+Epoch 4/7
+49984/50048 [============================>.] - ETA: 0s - loss: 0.0308Epoch 00003: saving model to weights-03.h5
+50048/50048 [==============================] - 353s - loss: 0.0308 - val_loss: 0.0181
+Epoch 5/7
+49984/50048 [============================>.] - ETA: 0s - loss: 0.0310Epoch 00004: saving model to weights-04.h5
+50048/50048 [==============================] - 356s - loss: 0.0310 - val_loss: 0.0183
+Epoch 6/7
+49984/50048 [============================>.] - ETA: 0s - loss: 0.0320Epoch 00005: saving model to weights-05.h5
+50048/50048 [==============================] - 356s - loss: 0.0320 - val_loss: 0.0156
+Epoch 7/7
+49984/50048 [============================>.] - ETA: 0s - loss: 0.0299Epoch 00006: saving model to weights-06.h5
+50048/50048 [==============================] - 355s - loss: 0.0299 - val_loss: 0.0129
+
+
+
