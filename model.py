@@ -179,8 +179,8 @@ validationset = valid_data \
 X_val, y_val = tuple( np.array(x) for x in zip(*validationset) )
 
 # for exact numbers but slower processing enable the commented line.
-samples = 8500
-samples = write_angles_to_file(pipeline(train_data), 'models/angles.csv')
+samples = 50000
+# samples = write_angles_to_file(pipeline(train_data), 'angles.csv')
 print("aprox. number of angles per epoch for training:", samples)
 print('validatation set:', len(y_val))
 print()
@@ -249,7 +249,7 @@ model.add(Dense(1))
 
 model.compile(loss='mse',
             optimizer=Adam(lr=LEARNINGRATE))
-checkpoint_path="models/weights-{epoch:02d}.h5"
+checkpoint_path="weights-{epoch:02d}.h5"
 checkpoint = ModelCheckpoint(checkpoint_path,
             verbose=1, save_best_only=False, save_weights_only=True, mode='auto')
 
@@ -268,6 +268,6 @@ model.fit_generator(
             callbacks=[checkpoint],
             nb_epoch=EPOCHS)
 
-model.save('models/model.h5')
+model.save('model.h5')
 
 exit()
