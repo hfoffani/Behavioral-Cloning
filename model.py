@@ -1,10 +1,10 @@
 import csv
 import cv2
 import numpy as np
+np.random.seed(5)
+
 from scipy.stats import norm
 from collections import defaultdict
-
-np.random.seed(5)
 
 from keras.models import Sequential
 from keras.layers import Flatten, Dense, Lambda
@@ -25,12 +25,12 @@ CHANNELS=3
 OFFSETCAMS=0.20
 MAXTRANSLATE=50
 MAXBRIGHT=.5
-SIGMADELZEROS=.2
+SIGMADELZEROS=.3
 
 LEARNINGRATE=0.0001
-EPOCHS=7
+EPOCHS=20
 VALIDATIONSPLIT=0.2
-BATCH_SIZE=32
+BATCH_SIZE=64
 
 
 
@@ -143,6 +143,7 @@ def add_brightness_images(iterable, bright_percent, skip=False, replace=False):
         image_br = cv2.cvtColor(image_br, cv2.COLOR_HSV2RGB)
         yield image_br, steer
 
+
 @Pipe
 def remove_with_normal(iterable, sigma, skip=False):
     mx = norm.pdf(0.0, 0.0, sigma)
@@ -166,7 +167,7 @@ def write_angles_to_file(iterable, fname):
 def pipeline(input_data):
     return input_data \
             | read_images_and_steer() \
-            | add_translated_images(MAXTRANSLATE) \
+            | add_translated_images(MAXTRANSLATE, replace=True) \
             | add_brightness_images(MAXBRIGHT, replace=True) \
             | flip_images_horizontally() \
             | remove_with_normal(SIGMADELZEROS)
@@ -178,32 +179,33 @@ validationset = valid_data \
 X_val, y_val = tuple( np.array(x) for x in zip(*validationset) )
 
 # for exact numbers but slower processing enable the commented line.
-samples = 26400
+samples = 8500
 # samples = write_angles_to_file(pipeline(train_data), 'models/angles.csv')
-print("aprox. number of angles for training:", samples)
-
-
-def keras_generator(input_data, batch_size):
-    X_batch = np.zeros((batch_size, HEIGHT, WIDTH, CHANNELS))
-    y_batch = np.zeros(batch_size)
-    while True:
-        # batch_size * 10 to prevent pipeline exhaust
-        n = np.random.random_integers(0, len(input_data) - batch_size * 10)
-        data_slice = input_data[n: n + batch_size * 10]
-        pipe = pipeline(data_slice)
-        for i, (image,steer) in enumerate(pipe):
-            if i >= batch_size:
-                break
-            X_batch[i] = image
-            y_batch[i] = steer
-        else:
-            print("THIS BATCH HAS ZEROES!!!")
-        yield X_batch, y_batch
-
-
+print("aprox. number of angles per epoch for training:", samples)
 print('validatation set:', len(y_val))
 print()
 # exit()
+
+
+
+def keras_generator(input_data, batch_size):
+    slice_size = batch_size * 5
+    X_batch = np.zeros((batch_size, HEIGHT, WIDTH, CHANNELS))
+    y_batch = np.zeros(batch_size)
+    i = 0
+    while True:
+        step = np.random.random_integers(0, len(input_data) / slice_size)
+        offset = (step * slice_size) % (len(input_data) - slice_size)
+        data_slice = input_data[offset: (offset + slice_size)]
+        pipe = pipeline(data_slice)
+        for image, steer in pipe:
+            X_batch[i] = image
+            y_batch[i] = steer
+            i += 1
+            if i >= batch_size:
+                yield X_batch, y_batch
+                i = 0
+
 
 
 def resize4nvidia(img):
