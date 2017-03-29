@@ -22,13 +22,13 @@ WIDTH=320
 HEIGHT=160
 CHANNELS=3
 
-OFFSETCAMS=0.20
+OFFSETCAMS=0.25
 MAXTRANSLATE=50
 MAXBRIGHT=.5
-SIGMADELZEROS=.3
+SIGMADELZEROS=0.25
 
 LEARNINGRATE=0.0001
-EPOCHS=20
+EPOCHS=7
 VALIDATIONSPLIT=0.2
 BATCH_SIZE=64
 
@@ -167,8 +167,8 @@ def write_angles_to_file(iterable, fname):
 def pipeline(input_data):
     return input_data \
             | read_images_and_steer() \
-            | add_translated_images(MAXTRANSLATE, replace=True) \
-            | add_brightness_images(MAXBRIGHT, replace=True) \
+            | add_translated_images(MAXTRANSLATE, replace=False) \
+            | add_brightness_images(MAXBRIGHT, replace=False) \
             | flip_images_horizontally() \
             | remove_with_normal(SIGMADELZEROS)
 
@@ -180,7 +180,7 @@ X_val, y_val = tuple( np.array(x) for x in zip(*validationset) )
 
 # for exact numbers but slower processing enable the commented line.
 samples = 8500
-# samples = write_angles_to_file(pipeline(train_data), 'models/angles.csv')
+samples = write_angles_to_file(pipeline(train_data), 'models/angles.csv')
 print("aprox. number of angles per epoch for training:", samples)
 print('validatation set:', len(y_val))
 print()
