@@ -6,5 +6,5 @@ models/
 *.h5
 angles.csv
 .ipynb_checkpoints/
-image_folder/
-*.mp4
+video/
+video.mp4
