@@ -21,12 +21,16 @@ The goals or steps of this project are the following:
 [//]: # (Image References)
 
 [image1]: ./examples/my-convnet-car.jpg "Model Visualization"
-[image2]: ./examples/placeholder.png "Grayscaling"
-[image3]: ./examples/placeholder_small.png "Recovery Image"
-[image4]: ./examples/placeholder_small.png "Recovery Image"
-[image5]: ./examples/placeholder_small.png "Recovery Image"
-[image6]: ./examples/placeholder_small.png "Normal Image"
-[image7]: ./examples/placeholder_small.png "Flipped Image"
+[image2]: ./examples/center_037.jpg "Center Camera"
+[image3]: ./examples/left_037.jpg "Left Camera"
+[image4]: ./examples/right_037.jpg "Right Camera"
+[image5]: ./examples/trans-00008.jpg "Translated Image 1"
+[image6]: ./examples/trans-0024.jpg "Translated Image 2"
+[image7]: ./examples/trans-0031.jpg "Translated Image 3"
+[image8]: ./examples/bright-0044.jpg "Brightness Image 1"
+[image9]: ./examples/bright-0045.jpg "Brightness Image 2"
+[image10]: ./examples/flip-0013.jpg "Flipped Image 1"
+[image11]: ./examples/flip-0020.jpg "Flipped Image 2"
 
 ## Rubric Points
 ### Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/432/view) individually and describe how I addressed each point in my implementation.  
@@ -99,24 +103,24 @@ This function makes use of the pipeline mentioned before. The purpose of `keras_
 
 ####1. An appropriate model architecture has been employed
 
-I use a model heavily based on NVIDIA End to End Learning for Self-Driving Cars (see https://arxiv.org/abs/1604.07316). It consists of five convolution layers (28@31x98, 36@14x47, 48@5x22, 64@3x20, 64@1x18) followed by three full connected layers of 100, 50 and 20 neurons each and the last output layer. I have changed the last FC layer to use 20 neuros instead of 10. See lines 223 to 245 of model.py
+I use a model heavily based on NVIDIA End to End Learning for Self-Driving Cars (see https://arxiv.org/abs/1604.07316). It consists of five convolution layers (28@31x98, 36@14x47, 48@5x22, 64@3x20, 64@1x18) followed by three full connected layers of 100, 50 and 20 neurons each and the last output layer. I have changed the last FC layer to use 20 neurons instead of 10. See lines 223 to 245 of model.py
 
-The model uses RELU activations layers after each convolution and He et al. normalization (https://arxiv.org/abs/1502.01852) and ELU activations () for the full connected ones. The data is normalized in the model using a Keras lambda layer (code line 221). 
+The model uses RELU activation layers after each convolution and He et al. normalization (https://arxiv.org/abs/1502.01852) and ELU activations () for the full connected ones. The data is normalized in the model using a Keras lambda layer (code line 221). 
 
 ####2. Attempts to reduce overfitting in the model
 
-I added dropout layers, one after each fully connected layer with a keep probability of 50%. It has been proven that dropout layers enhance the generalization properties of the network to avoid overfitting.
+I added dropout layers, one after each fully connected layer with a keep probability of 50%. It has been proven that dropout layers enhance the generalization properties of the network to avoid over-fitting.
 
 ####3. Model parameter tuning
 
 There are several parameters that can be tuned in my solution. These are:
 
 1. The offset correction for the left and right cameras.
-1. The maximum translation in pixels for generated sintetyc images.
-1. The maximum increase or decrease of the brightness in percentage for generated sintetyc images.
+1. The maximum translation in pixels for generated synthetic images.
+1. The maximum increase or decrease of the brightness in percentage for generated intensity images.
 1. The standard deviation around zero of the filter for the steering with angle around zero.
 
-The other hyperparameters are:
+The other hyper-parameters are:
 
 1. The initial learning rate.
 1. The number of epochs.
@@ -125,7 +129,7 @@ The other hyperparameters are:
 
 ####4. Appropriate training data
 
-One of the main problem I faced was the lack of appropiate hardware. The keyboard and the joystick I have were not able to drive the simulator satisfactorly. My solution then uses only the data provided by Udacity.
+One of the main problem I faced was the lack of appropriate hardware. The keyboard and the joystick I have were not able to drive the simulator satisfactorily. My solution then uses only the data provided by Udacity.
 
 ###Model Architecture and Training Strategy
 
@@ -134,18 +138,18 @@ One of the main problem I faced was the lack of appropiate hardware. The keyboar
 The overall strategy for deriving a solution was to comply to some guidelines all along the development that I impose to myself:
 
 1. Have a clear separation of concerns. (preprocess, model, evaluation)
-1. Only use the Udacity dataset.
+1. Only use the Udacity data-set.
 1. Do not modify the image feed part of drive.py
 
 My first approach was to try a simple neural network with one input layer and one output layer so I can test the whole process, from reading the images to writing a model that the simulator can use.
 
 The next step was to try a LeNet model with 5 epochs. It did better than the first model, which is roughly a linear regression, but the car did not advance too much.
 
-Testing the model was done using mean squared error as the loss function in training and validation. The validation set was obtained by separating the 20% of the data set appart. The validation loss was a great indicator if the model performs badly but regrettably it did not give many hints if the model was *great*.
+Testing the model was done using mean squared error as the loss function in training and validation. The validation set was obtained by separating the 20% of the data set apart. The validation loss was a great indicator if the model performs badly but regrettably it did not give many hints if the model was *great*.
 
 The last model that I implemented was the NVIDIA with some modifications.
 
-To combat the overfitting, I added dropout layers to the model.
+To combat the over-fitting, I added dropout layers to the model.
 
 The final step was to run the simulator to see how well the car was driving around track one. There were a few spots where the vehicle fell off the track and it showed that a good model was not enough. A lot of augmentation data was needed (details below).
 
@@ -153,9 +157,9 @@ At the end of the process, the vehicle is able to drive autonomously around the 
 
 ####2. Final Model Architecture
 
-It consists of five convolution layers (28@31x98, 36@14x47, 48@5x22, 64@3x20, 64@1x18) followed by three full connected layers of 100, 50 and 20 neurons each and the last output layer. I have changed the last FC layer to use 20 neuros instead of 10. See lines 223 to 245 of model.py
+It consists of five convolution layers (28@31x98, 36@14x47, 48@5x22, 64@3x20, 64@1x18) followed by three full connected layers of 100, 50 and 20 neurons each and the last output layer. I have changed the last FC layer to use 20 neurons instead of 10. See lines 223 to 245 of model.py
 
-I have changed the last FC layer to use 20 neuros instead of 10. See lines 223 to 245 of model.py
+I have changed the last FC layer to use 20 neurons instead of 10. See lines 223 to 245 of model.py
 
 The model uses RELU activations layers after each convolution and He et al. normalization (https://arxiv.org/abs/1502.01852) and ELU activations () for the full connected ones. The data is normalized in the model using a Keras lambda layer (code line 221).
 
@@ -163,31 +167,42 @@ Here is a visualization of the architecture
 
 ![Model of the neural network][image1]
 
+
 ####3. Creation of the Training Set & Training Process
 
 The training set that I use was the one provided by Udacity.
 
-![alt text][image2]
+I took the images first from the center camera only. I then added the images from the left and right cameras and applied a correction to the steer angle. The next figure shows the images from the center, left and right camera respectively.
 
-I then recorded the vehicle recovering from the left side and right sides of the road back to center so that the vehicle would learn to .... These images show what a recovery looks like starting from ... :
+![Center Camera][image2]
+![Left Camera][image3]
+![Right Camera][image4]
 
-![alt text][image3]
-![alt text][image4]
-![alt text][image5]
+Still this data set was not able to drive the simulator correctly without sliding of the lane.
 
-Then I repeated this process on track two in order to get more data points.
+But a substantial increase of the training data through augmentation did the trick. I added an horizontal translation with a random move to the left or right of up to 50 pixels per side.
 
-To augment the data sat, I also flipped images and angles thinking that this would ... For example, here is an image that has then been flipped:
+![Translated Image 1][image5]
+![Translated Image 2][image6]
+![Translated Image 3][image7]
 
-![alt text][image6]
-![alt text][image7]
+I also added a random brightness increase or decrease of up to 50%.
 
-Etc ....
+![Brightness Image 1][image8]
+![Brightness Image 2][image9]
 
-After the collection process, I had X number of data points. I then preprocessed this data by ...
+For each of all the generated images I also added its corresponding flipped image so the network would not learn that the circuit is counterclockwise and prefer to infer left turns.
 
+![Flipped Image 1][image10]
+![Flipped Image 2][image11]
 
-I finally randomly shuffled the data set and put Y% of the data into a validation set. 
+All these steps are joined together with the aforementioned pipeline. It roughly generates around 50,000 images. However the distribution of this set shows that there are thousands of images that correspond to driving straight or with a very small steer angle. Without filtering these observations the network would tend to drive straight failing to take the curves. The last step of the pipeline filter these images with a Gaussian probability (i.e. the probability to be filter out is higher when the steering angle approaches to zero.)
 
-I used this training data for training the model. The validation set helped determine if the model was over or under fitting. The ideal number of epochs was Z as evidenced by ... I used an adam optimizer so that manually training the learning rate wasn't necessary.
+The model also trims the images from the top (taking out the landscape) and the bottom (taking out the car's hood).
+
+Since most of the augmented data set are generated with random alterations, every epoch generate a slightly different data set. This should also avoid over-fitting.
+
+The validation set consists of the 20% of the center camera images *without any postprocessing*. My assumption is that the validation loss would be close to the true loss on the test set.
+
+Finally, I set the learning rate at 0.0001 which is the recommend number for the Adam optimizer. After many attempts I found that 7 (seven) epochs were enough for the model to drive the first track successfully.
 
