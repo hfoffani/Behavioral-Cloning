@@ -9,6 +9,6 @@ angles.csv
 video/
 video.mp4
 
-writeup.html
-writeup.pdf
+*.html
+*.pdf
 project3.zip
