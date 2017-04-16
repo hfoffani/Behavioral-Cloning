@@ -7,7 +7,6 @@ The goals or steps of this project are the following:
 * Build, a convolution neural network in Keras that predicts steering angles from images
 * Train and validate the model with a training and validation set
 * Test that the model successfully drives around track one without leaving the road
-* Summarize the results with a written report
 
 
 [//]: # (Image References)
@@ -178,3 +177,10 @@ The validation set consists of the 20% of the center camera images *without any 
 
 Finally, I set the learning rate at 0.0001 which is the recommend number for the Adam optimizer. After many attempts I found that 7 (seven) epochs were enough for the model to drive the first track successfully.
 
+### Recording.
+
+The results were capture in a video:
+
+https://youtu.be/
+
+[![Click to view!](https://img.youtube.com/vi/2wtDGQjOuwY/0.jpg)](https://www.youtube.com/watch?v=2wtDGQjOuwY)
