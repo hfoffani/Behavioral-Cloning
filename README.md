@@ -181,6 +181,5 @@ Finally, I set the learning rate at 0.0001 which is the recommend number for the
 
 The results were capture in a video:
 
-https://youtu.be/
 
 [![Click to view!](https://img.youtube.com/vi/2wtDGQjOuwY/0.jpg)](https://www.youtube.com/watch?v=2wtDGQjOuwY)
